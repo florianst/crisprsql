@@ -3,6 +3,12 @@
 
 include 'inc/db.php';
 
+class SQLiteDB extends SQLite3 {
+    function __construct($dbFile) {
+        $this->open($dbFile);
+    }
+}
+
 $sqlCreateEpigeneticsData = " CREATE TABLE IF NOT EXISTS epigenetics_experiments (
                                 id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
                                 cell_line VARCHAR(255),
@@ -58,8 +64,33 @@ $result3 = $conn->query($sqlCreateCleavageData);
 
 if ($result1 === TRUE && $result2 === TRUE && $result3 === TRUE) {
     echo "Tables created successfully";
+    
+    // read sqlite .db file - path defined in class
+    $db = new SQLiteDB("../haeussler_onandoff_measuredonly.db");
+    $tables = array("epigenetics_experiments", "cleavage_experiments", "cleavage_data");
+    
+    foreach ($tables as $table) {
+        $query = $db->query('SELECT * FROM '.$table);
+        
+        while ($row = $query->fetchArray(SQLITE3_ASSOC)) {
+            $columns = implode(", ", array_keys($row));
+            $escaped_values = array_map(array($conn, 'real_escape_string'), array_values($row));
+            $values  = implode("', '", $escaped_values);
+            $mysql = "INSERT INTO `".$table."`($columns) VALUES ('$values')";
+            $result4 = $conn->query($mysql);
+        }
+        if ($result4 === TRUE) { 
+            echo "<br> ".$table." inserted successfully"; 
+        } else { 
+            echo "<br>Error in ".$table.": " . "<br>" . $conn->error; 
+        }
+    
+    }
+    
+    
+    
 } else {
-    echo "Error: " . $sql . "<br>" . $conn->error;
+    echo "Error: " . "<br>" . $conn->error;
 }
 
 $conn->close();
