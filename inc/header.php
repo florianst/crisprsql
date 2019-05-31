@@ -1,5 +1,8 @@
 <?php 
 include 'inc/db.php';
+
+$navpages = array("index.php"=>"Home", "search.php"=>"Targets", "epigen.php"=>"Epigenetics", "submit.php"=>"Submit", "contact.php"=>"Contact");
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -22,24 +25,21 @@ include 'inc/db.php';
 
 <div class="container">
 <nav class="navbar navbar-left navbar-expand-sm bg-primary navbar-dark" style="margin-top:-4em; min-height:4em; margin-bottom: 15px;">
-  <a class="navbar-brand" href="index.php">Home</a>
+  <a class="navbar-brand" href="index.php">crisprSQL</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="collapsibleNavbar">
     <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" href="search.php">Targets</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="epigen.php">Epigenetics</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="submit.php">Submit</a>
-      </li>       
-      <li class="nav-item">
-        <a class="nav-link" href="contact.php">Contact</a>
-      </li>    
+    <?php
+    foreach ($navpages as $path => $title) {
+        $scriptpath = basename($_SERVER['PHP_SELF']);
+        if ($path == $scriptpath) { $active = ' active'; } else { $active = ''; }
+        echo '<li class="nav-item'.$active.'">
+                 <a class="nav-link" href="'.$path.'">'.$title.'</a>
+              </li>';
+    }
+    ?>
     </ul>
   </div>  
 </nav>
