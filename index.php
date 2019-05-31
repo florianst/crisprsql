@@ -26,6 +26,11 @@ include "inc/header.php";
         </form>
       </div>
       <br>
+      <h5>Database statistics</h5>
+      <?php 
+      // show studies involved, number of guides, number of targets, number of targets with at least 1 epigenetic marker
+      ?>
+      <br>
       <h5>Contribute to database</h5>
       <p>crisprSQL invites submissions of Sp-Cas9 off-target indel frequency results, in order to be included in the online database and the benchmark dataset. Please click <a href="submit.php">here</a>.</p>
     </div>
