@@ -1,3 +1,6 @@
+<?php 
+include 'inc/db.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
