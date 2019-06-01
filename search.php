@@ -38,6 +38,8 @@ if ($result->num_rows > 0) {
         $result3 = $conn->query("SELECT * FROM cleavage_data WHERE grna_target_id=".$row["grna_target_id"]." AND id!=".($row["id"]-1));
         echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier">'.$row["grna_target_sequence"].'</td><td>'.$row["grna_target_chr"].':'.$row["grna_target_start"].'-'.$row["grna_target_end"].'</td><td>'.$row["genome"].'</td><td>'.$studies.'</td><td>'.$result3->num_rows.'</td></tr>';
     }
+    
+    echo "</tbody>";
 }
 ?>
 </table>
