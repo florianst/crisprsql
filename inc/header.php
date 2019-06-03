@@ -11,6 +11,7 @@ $navpages = array("index.php"=>"Home", "search.php"=>"Targets", "epigen.php"=>"E
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/design.css">
   <script src="/inc/jquery-3.4.1.min.js"></script>
   <script src="/inc/popper.min.js"></script>
   <script src="/js/bootstrap.min.js"></script>
@@ -19,7 +20,7 @@ $navpages = array("index.php"=>"Home", "search.php"=>"Targets", "epigen.php"=>"E
 
 <div class="jumbotron text-center" style="margin-bottom:0; background-color:#c1c1c1; background-image:url('4un3_banner.jpg'); background-repeat:no-repeat; color:white;">
   <h1>crisprSQL</h1>
-  <p>Database for CRISPR/Sp-Cas9 off-target assays</p> 
+  <h5>Database for CRISPR/Sp-Cas9 off-target assays</h5> 
 </div>
 <nav class="bg-primary navbar-dark" style="height:4em;"></nav>
 
