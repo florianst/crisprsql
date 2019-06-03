@@ -31,6 +31,7 @@ include "inc/header.php";
     <label for="additional">File metadata</label>
     <textarea class="form-control" id="additional" rows="3" placeholder="PubMed-ID, publication link, measurement protocol, etc."></textarea>
   </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
 <script>
