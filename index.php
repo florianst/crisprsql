@@ -47,7 +47,7 @@ include "inc/header.php";
       $result  = $conn->query("SELECT DISTINCT experiment_id FROM cleavage_data");
       $result2 = $conn->query("SELECT id FROM cleavage_data");
       $result3 = $conn->query("SELECT id FROM cleavage_data WHERE epigenetics_ids != ''");
-      echo "<p>crisprSQL contains ".$result->num_rows." <a href='studies.php'>studies</a>, ".$result2->num_rows." total <a href='targets.php'>targets</a>, ".$result3->num_rows." of which have at least one <a href='epigenetics.php'>epigenetic marker</a>.</p>";
+      echo "<p>crisprSQL contains ".$result->num_rows." <a href='studies.php'>studies</a>, ".$result2->num_rows." total <a href='search.php'>targets</a>, ".$result3->num_rows." of which have at least one <a href='epigen.php'>epigenetic marker</a>.</p>";
       ?>
       <br>
       <h5>Contribute to database</h5>
