@@ -1,7 +1,7 @@
 <?php 
 include 'inc/db.php';
 
-$navpages = array("index.php"=>"Home", "studies.php"=>"Studies", "search.php"=>"Targets", "epigen.php"=>"Epigenetics", "download.php"=>"Download", "submit.php"=>"Submit", "contact.php"=>"Contact");
+$navpages = array("index.php"=>"Home", "studies.php"=>"Studies", "search.php"=>"Browse", "epigen.php"=>"Epigenetics", "download.php"=>"Download", "submit.php"=>"Submit", "contact.php"=>"Contact");
 
 ?>
 <!DOCTYPE html>

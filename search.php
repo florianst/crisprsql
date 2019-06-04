@@ -4,11 +4,7 @@ include "inc/header.php";
 // SELECT id, grna_target_id, target_sequence, 2*LENGTH(target_sequence) - CHAR_LENGTH(REPLACE(target_sequence, "C", "")) - CHAR_LENGTH(REPLACE(target_sequence, "G", "")) AS GC_count FROM cleavage_data HAVING GC_count > 19
 // TODO: "target gene" column --> get list of gene names
 // TODO: visualisation of loci on chromosomes
-?>
 
-<h2>Targets</h2>
-
-<?php
 $limit = 500;
 
 if (isset($_POST["submit_rna"]) && isset($_POST["guide"])) {
@@ -34,6 +30,7 @@ if (isset($_POST["submit_rna"]) && isset($_POST["guide"])) {
 if (isset($result)) {
     // display all matching targets
     if ($result->num_rows > 0) {
+        echo "<h2>Targets</h2>";
         echo "<h4>matching your search for {$search}</h4><table class='table table-striped'>";
         echo "<p>Your query yielded {$result->num_rows} results:</p>";
         echo '<thead class="thead-dark">
@@ -73,6 +70,8 @@ if (isset($result)) {
         echo '<div class="alert alert-primary" role="alert">Your query did not match any targets in the database.</div>';
     }
 } else {
+    echo "<h2>Guides</h2>";
+    
     // display all guides
     $species = array("Human"=>"genome='hg19' OR genome='hg38'", "Rodents"=>"genome='rn5' OR genome='mm9' OR genome='mm10'");
     
