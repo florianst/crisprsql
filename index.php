@@ -15,27 +15,27 @@ include "inc/header.php";
       </div>
       <h5>Search database</h5>
       <div class="container">
-        <form action="search.php">
+        <form action="search.php" method="post" enctype="multipart/form-data">
           <div class="input-group">
-            <input type="text" class="form-control" id="sgrna" placeholder="search guide sequence" name="sgrna">
+            <input type="text" class="form-control" id="sgrna" placeholder="search guide sequence" name="guide">
             <div class="input-group-append">
-    			<button class="btn btn-primary" type="submit">Search</button>
+    			<button class="btn btn-primary" type="submit" name="submit_rna">Search</button>
   			</div>
   		  </div>
   		</form><br>
-        <form action="search.php">
+        <form action="search.php" method="post" enctype="multipart/form-data">
           <div class="input-group">
             <input type="text" class="form-control" id="target" placeholder="search target sequence" name="target">
             <div class="input-group-append">
-    			<button class="btn btn-primary" type="submit">Search</button>
+    			<button class="btn btn-primary" type="submit" name="submit_target">Search</button>
   			</div>
   		  </div>  			
   		</form><br>
-        <form action="search.php">
+        <form action="search.php" method="post" enctype="multipart/form-data">
           <div class="input-group">
-            <input type="text" class="form-control" id="region" placeholder="search region (chr1:15000-55000)" name="region">
+            <input type="text" class="form-control" id="region" placeholder="search target region (chr1:15000-55000)" name="targetregion">
             <div class="input-group-append">
-    			<button class="btn btn-primary" type="submit">Search</button>
+    			<button class="btn btn-primary" type="submit" name="submit_region">Search</button>
   			</div>
   		  </div>
   		</form>
