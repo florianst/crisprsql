@@ -26,7 +26,7 @@ if ($result->num_rows > 0) {
     
     while($row = $result->fetch_assoc()) { // output data of each row
         $i++;
-        $result2 = $conn->query("SELECT id FROM cleavage_data WHERE experiment_id='{$row["experiment_id"]}' AND grna_target_id=id GROUP BY grna_target_id");
+        $result2 = $conn->query("SELECT id FROM cleavage_data WHERE experiment_id='{$row["experiment_id"]}' AND grna_target_id=id AND cell_line='{$row["cell_line"]}' GROUP BY grna_target_id");
         $result3 = $conn->query("SELECT id FROM cleavage_data WHERE experiment_id='{$row["experiment_id"]}' AND epigenetics_ids != '' AND cell_line='{$row["cell_line"]}'");
         $sumcount  += $row["count"];
         $sumguides += $result2->num_rows;
