@@ -12,9 +12,12 @@ $navpages = array("index.php"=>"Home", "studies.php"=>"Studies", "search.php"=>"
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/design.css">
-  <script src="/inc/jquery-3.4.1.min.js"></script>
-  <script src="/inc/popper.min.js"></script>
+  <link rel="stylesheet" href="/css/bootstrap-sortable.css">
+  <script src="/js/jquery-3.4.1.min.js"></script>
+  <script src="/js/popper.min.js"></script>
   <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/bootstrap-sortable.js"></script>
+  <script src="/js/moment.min.js"></script>
 </head>
 <body>
 

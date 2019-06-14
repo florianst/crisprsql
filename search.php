@@ -32,10 +32,10 @@ if (isset($result)) {
     // display all matching targets
     if ($result->num_rows > 0) {
         echo "<h2>Targets</h2>";
-        echo "<h4 style='display:inline; margin-right:1em;'>matching your search for {$search}</h4><a href='search.php'>Back</a><table class='table table-striped'>";
+        echo "<h4 style='display:inline; margin-right:1em;'>matching your search for {$search}</h4><a href='search.php'>Back</a>";
         echo "<p>Your query yielded {$result->num_rows} results: <img src='".plotOfftargetProfile($result->fetch_all(MYSQLI_ASSOC))."' alt='offtarget_distr' /></p>";
         $result->data_seek(0) ;// reset pointer to result set such that we can go through it again below
-        echo '<thead class="thead-dark">
+        echo '<table class="table table-striped sortable"><thead class="thead-dark">
               <tr>
                 <th scope="col">No.</th>
                 <th scope="col">guide sequence</th>
@@ -82,7 +82,7 @@ if (isset($result)) {
     foreach ($species as $title => $cond) {
         $result = $conn->query("SELECT id, genome, grna_target_chr, grna_target_start, grna_target_end, grna_target_sequence, grna_target_id FROM cleavage_data WHERE grna_target_id=id-1 AND ".$cond." GROUP BY grna_target_sequence LIMIT {$limit}");
         if ($result->num_rows > 0) {
-            echo "<h4>".$title."</h4><table class='table table-striped'>";
+            echo "<h4>".$title."</h4><table class='table table-striped sortable'>";
             echo '<thead class="thead-dark">
               <tr>
                 <th scope="col">No.</th>
