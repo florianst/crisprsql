@@ -30,9 +30,12 @@ function plotOfftargetProfile($array, $imgwidth=180, $imgheight=30) {
     foreach ($array as $target) {
         // calculate x position of line from chromosome and start
         $totalLength = array_sum($chromLengths);
-        $LengthToChr = array_sum(array_chunk($chromLengths, array_search($target["target_chr"], array_keys($chromLengths))+1, TRUE)[0]);
-        $xpos = $imgwidth*($LengthToChr+$target["target_start"])/$totalLength;
-        imageline($image, $xpos, 0, $xpos, $imgheight, $target_colour);
+        $index = array_search($target["target_chr"], array_keys($chromLengths));
+        if ($index > 0 && is_numeric($target["target_start"])) {
+            $LengthToChr = array_sum(array_chunk($chromLengths, $index+1, TRUE)[0]);
+            $xpos = $imgwidth*($LengthToChr+$target["target_start"])/$totalLength;
+            imageline($image, $xpos, 0, $xpos, $imgheight, $target_colour);
+        }
     }
     
     
@@ -43,6 +46,6 @@ function plotOfftargetProfile($array, $imgwidth=180, $imgheight=30) {
     return ('data:' . $mime . ';base64,' . base64_encode($contents));
 }
 
-echo '<img src="'.plotOfftargetProfile(array(["target_chr"=>"chr10", "target_start"=>"10000"])).'" alt="offtarget_distr" />';
+//echo '<img src="'.plotOfftargetProfile(array(["target_chr"=>"chr10", "target_start"=>"10000"])).'" alt="offtarget_distr" />';
 
 ?>

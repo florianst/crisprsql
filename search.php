@@ -1,5 +1,6 @@
 <?php 
 include "inc/header.php";
+include "inc/plot_offtargetprofile.php";
 // GC count:
 // SELECT id, grna_target_id, target_sequence, 2*LENGTH(target_sequence) - CHAR_LENGTH(REPLACE(target_sequence, "C", "")) - CHAR_LENGTH(REPLACE(target_sequence, "G", "")) AS GC_count FROM cleavage_data HAVING GC_count > 19
 // TODO: "target gene" column --> get list of gene names
@@ -87,6 +88,7 @@ if (isset($result)) {
                 <th scope="col">region</th>
                 <th scope="col">assembly</th>
                 <th scope="col">study</th>
+                <th scope="col">target distribution</th>
                 <th scope="col">number of measured off-targets</th>
               </tr>
               </thead>
@@ -105,7 +107,9 @@ if (isset($result)) {
                     }
                 }
                 $result3 = $conn->query("SELECT * FROM cleavage_data WHERE grna_target_id=".$row["grna_target_id"]." AND id!=".($row["id"]-1));
-                echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier">'.$row["grna_target_sequence"].'</td><td>'.$row["grna_target_chr"].':'.$row["grna_target_start"].'-'.$row["grna_target_end"].'</td><td>'.$row["genome"].'</td><td>'.$studies.'</td><td>'.$result3->num_rows.'</td></tr>';
+                $result4 = $conn->query("SELECT target_chr, target_start FROM cleavage_data WHERE grna_target_id=".$row["grna_target_id"]);
+                $targets = $result4->fetch_all(MYSQLI_ASSOC);
+                echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier">'.$row["grna_target_sequence"].'</td><td>'.$row["grna_target_chr"].':'.$row["grna_target_start"].'-'.$row["grna_target_end"].'</td><td>'.$row["genome"].'</td><td>'.$studies.'</td><td><img src="'.plotOfftargetProfile($targets).'" alt="offtarget_distr" /></td><td>'.$result3->num_rows.'</td></tr>';
             }
             
             echo "</tbody></table><br>";
