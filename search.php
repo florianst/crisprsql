@@ -97,7 +97,6 @@ if (isset($result)) {
             // output data of each row
             $i = 0;
             while($row = $result->fetch_assoc()) {
-                $i++;
                 $studies = '';
                 $result2 = $conn->query("SELECT DISTINCT experiment_id FROM cleavage_data WHERE id=".$row["id"]);
                 while($row2 = $result2->fetch_assoc()) {
@@ -107,9 +106,12 @@ if (isset($result)) {
                     }
                 }
                 $result3 = $conn->query("SELECT * FROM cleavage_data WHERE grna_target_id=".$row["grna_target_id"]." AND id!=".($row["id"]-1));
-                $result4 = $conn->query("SELECT target_chr, target_start FROM cleavage_data WHERE grna_target_id=".$row["grna_target_id"]);
-                $targets = $result4->fetch_all(MYSQLI_ASSOC);
-                echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier">'.$row["grna_target_sequence"].'</td><td>'.$row["grna_target_chr"].':'.$row["grna_target_start"].'-'.$row["grna_target_end"].'</td><td>'.$row["genome"].'</td><td>'.$studies.'</td><td><img src="'.plotOfftargetProfile($targets).'" alt="offtarget_distr" /></td><td>'.$result3->num_rows.'</td></tr>';
+                if ($result3->num_rows > 1) {
+                    $result4 = $conn->query("SELECT id, target_chr, target_start, cleavage_freq, grna_target_id FROM cleavage_data WHERE grna_target_id=".$row["grna_target_id"]);
+                    $targets = $result4->fetch_all(MYSQLI_ASSOC);
+                    $i++;
+                    echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier">'.$row["grna_target_sequence"].'</td><td>'.$row["grna_target_chr"].':'.$row["grna_target_start"].'-'.$row["grna_target_end"].'</td><td>'.$row["genome"].'</td><td>'.$studies.'</td><td><img src="'.plotOfftargetProfile($targets).'" alt="offtarget_distr" /></td><td>'.$result3->num_rows.'</td></tr>';
+                }
             }
             
             echo "</tbody></table><br>";
