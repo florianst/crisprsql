@@ -1,10 +1,10 @@
 <?php 
-include "inc/header.php";
-include "inc/plot_offtargetprofile.php";
 // GC count:
 // SELECT id, grna_target_id, target_sequence, 2*LENGTH(target_sequence) - CHAR_LENGTH(REPLACE(target_sequence, "C", "")) - CHAR_LENGTH(REPLACE(target_sequence, "G", "")) AS GC_count FROM cleavage_data HAVING GC_count > 19
 // TODO: "target gene" column --> get list of gene names
-// TODO: visualisation of loci on chromosomes
+include "inc/header.php";
+include "inc/plot_offtargetprofile.php";
+
 
 $limit = 500;
 
@@ -110,7 +110,7 @@ if (isset($result)) {
                     $result4 = $conn->query("SELECT target_chr, target_start, cleavage_freq, grna_target_chr, grna_target_start FROM cleavage_data WHERE grna_target_id=".$row["grna_target_id"]);
                     $targets = $result4->fetch_all(MYSQLI_ASSOC);
                     $i++;
-                    echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier">'.$row["grna_target_sequence"].'</td><td>'.$row["grna_target_chr"].':'.$row["grna_target_start"].'-'.$row["grna_target_end"].'</td><td>'.$row["genome"].'</td><td>'.$studies.'</td><td><img src="'.plotOfftargetProfile($targets).'" alt="offtarget_distr" /></td><td>'.$result3->num_rows.'</td></tr>';
+                    echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier"><form action="search.php" method="post" id="form'.$i.'"><input type="hidden" name="submit_rna" /><input type="hidden" name="guide" id="sgrna" value="'.$row["grna_target_sequence"].'" /><a href="#" class="submit-link" onclick="document.getElementById(\'form'.$i.'\').submit();">'.$row["grna_target_sequence"].'</a></form></td><td>'.$row["grna_target_chr"].':'.$row["grna_target_start"].'-'.$row["grna_target_end"].'</td><td>'.$row["genome"].'</td><td>'.$studies.'</td><td><img src="'.plotOfftargetProfile($targets).'" alt="offtarget_distr" /></td><td>'.$result3->num_rows.'</td></tr>';
                 }
             }
             
