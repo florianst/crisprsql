@@ -11,11 +11,11 @@ $limit = 500;
 if (isset($_POST["submit_rna"]) && isset($_POST["guide"])) {
     $guide = preg_replace("/[^A-Ta-t ]/", '', $_POST["guide"]);
     $search = $guide;
-    $result = $conn->query("SELECT * FROM cleavage_data WHERE grna_target_sequence LIKE '%{$guide}%'");
+    $result = $conn->query("SELECT *, 2*LENGTH(target_sequence) - CHAR_LENGTH(REPLACE(target_sequence, \"C\", '')) - CHAR_LENGTH(REPLACE(target_sequence, \"G\", '')) AS GC_count FROM cleavage_data WHERE grna_target_sequence LIKE '%{$guide}%'");
 } elseif (isset($_POST["submit_target"]) && isset($_POST["target"])) {
     $target = preg_replace("/[^A-Ta-t ]/", '', $_POST["target"]);
     $search = $target;
-    $result = $conn->query("SELECT * FROM cleavage_data WHERE target_sequence LIKE '%{$target}%'");
+    $result = $conn->query("SELECT *, 2*LENGTH(target_sequence) - CHAR_LENGTH(REPLACE(target_sequence, \"C\", '')) - CHAR_LENGTH(REPLACE(target_sequence, \"G\", '')) AS GC_count FROM cleavage_data WHERE target_sequence LIKE '%{$target}%'");
 } elseif (isset($_POST["submit_region"]) && isset($_POST["targetregion"])) {
     $targetregion = $_POST["targetregion"];
     if (preg_match("/^(chr)[0-9XVIY]{1,2}:[0-9]{1,10}-[0-9]{1,10}$/", $targetregion)) { // verify string is a proper region
@@ -25,20 +25,22 @@ if (isset($_POST["submit_rna"]) && isset($_POST["guide"])) {
         $temp = explode(":", $targetregion)[1];
         $start= explode("-", $temp)[0];
         $end  = explode("-", $temp)[1];
-        $result = $conn->query("SELECT * FROM cleavage_data WHERE target_chr='{$chr}' AND target_start>={$start} AND target_end<={$end}");
+        $result = $conn->query("SELECT *, 2*LENGTH(target_sequence) - CHAR_LENGTH(REPLACE(target_sequence, \"C\", '')) - CHAR_LENGTH(REPLACE(target_sequence, \"G\", '')) AS GC_count FROM cleavage_data WHERE target_chr='{$chr}' AND target_start>={$start} AND target_end<={$end}");
     }
 } 
 if (isset($result)) {
     // display all matching targets
     if ($result->num_rows > 0) {
         echo "<h2>Targets</h2>";
-        echo "<h4>matching your search for {$search}</h4><table class='table table-striped'>";
-        echo "<p>Your query yielded {$result->num_rows} results:</p>";
+        echo "<h4 style='display:inline; margin-right:1em;'>matching your search for {$search}</h4><a href='search.php'>Back</a><table class='table table-striped'>";
+        echo "<p>Your query yielded {$result->num_rows} results: <img src='".plotOfftargetProfile($result->fetch_all(MYSQLI_ASSOC))."' alt='offtarget_distr' /></p>";
+        $result->data_seek(0) ;// reset pointer to result set such that we can go through it again below
         echo '<thead class="thead-dark">
               <tr>
                 <th scope="col">No.</th>
                 <th scope="col">guide sequence</th>
                 <th scope="col">target sequence</th>
+                <th scope="col">target GC count</th>
                 <th scope="col">target region</th>
                 <th scope="col">assembly</th>
                 <th scope="col">cleavage rate</th>
@@ -63,7 +65,7 @@ if (isset($result)) {
                     $studies .= '<a href="https://www.ncbi.nlm.nih.gov/pubmed/'.$queryresult2["pubmed_id"].'" target="_new">'.$queryresult2["name"].'</a> ';
                 }
             }
-            echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier">'.$row["grna_target_sequence"].'</td><td style="font-family:Courier">'.$row["target_sequence"].'</td><td>'.$row["target_chr"].':'.$row["target_start"].'-'.$row["target_end"].'</td><td>'.$row["genome"].'</td><td>'.$row["cleavage_freq"].'</td><td>'.$studies.'</td></tr>';
+            echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier">'.$row["grna_target_sequence"].'</td><td style="font-family:Courier">'.$row["target_sequence"].'</td><td>'.$row["GC_count"].'</td><td>'.$row["target_chr"].':'.$row["target_start"].'-'.$row["target_end"].'</td><td>'.$row["genome"].'</td><td>'.$row["cleavage_freq"].'</td><td>'.$studies.'</td></tr>';
         }
         
         echo "</tbody></table><br>";
@@ -110,7 +112,7 @@ if (isset($result)) {
                     $result4 = $conn->query("SELECT target_chr, target_start, cleavage_freq, grna_target_chr, grna_target_start FROM cleavage_data WHERE grna_target_id=".$row["grna_target_id"]);
                     $targets = $result4->fetch_all(MYSQLI_ASSOC);
                     $i++;
-                    echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier"><form action="search.php" method="post" id="form'.$i.'"><input type="hidden" name="submit_rna" /><input type="hidden" name="guide" id="sgrna" value="'.$row["grna_target_sequence"].'" /><a href="#" class="submit-link" onclick="document.getElementById(\'form'.$i.'\').submit();">'.$row["grna_target_sequence"].'</a></form></td><td>'.$row["grna_target_chr"].':'.$row["grna_target_start"].'-'.$row["grna_target_end"].'</td><td>'.$row["genome"].'</td><td>'.$studies.'</td><td><img src="'.plotOfftargetProfile($targets).'" alt="offtarget_distr" /></td><td>'.$result3->num_rows.'</td></tr>';
+                    echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier"><form action="search.php" method="post" id="form'.$i.'"><input type="hidden" name="submit_rna" /><input type="hidden" name="guide" id="sgrna" value="'.$row["grna_target_sequence"].'" /><a href="#" class="submit-link" onclick="document.getElementById(\'form'.$i.'\').submit();">'.$row["grna_target_sequence"].'</a></form></td><td>'.$row["grna_target_chr"].':'.$row["grna_target_start"].'-'.$row["grna_target_end"].'</td><td>'.$row["genome"].'</td><td>'.$studies.'</td><td><img src="'.plotOfftargetProfile($targets).'" alt="offtarget distribution" /></td><td>'.$result3->num_rows.'</td></tr>';
                 }
             }
             
