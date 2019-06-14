@@ -37,7 +37,7 @@ if (isset($result)) {
         $result->data_seek(0) ;// reset pointer to result set such that we can go through it again below
         echo '<table class="table table-striped sortable"><thead class="thead-dark">
               <tr>
-                <th scope="col">No.</th>
+                <th scope="col" data-defaultsort="disabled">No.</th>
                 <th scope="col">guide sequence</th>
                 <th scope="col">target sequence</th>
                 <th scope="col">target GC count</th>
@@ -85,12 +85,12 @@ if (isset($result)) {
             echo "<h4>".$title."</h4><table class='table table-striped sortable'>";
             echo '<thead class="thead-dark">
               <tr>
-                <th scope="col">No.</th>
+                <th scope="col" data-defaultsort="disabled">No.</th>
                 <th scope="col">sequence</th>
                 <th scope="col">region</th>
                 <th scope="col">assembly</th>
                 <th scope="col">study</th>
-                <th scope="col">target distribution</th>
+                <th scope="col" data-defaultsort="disabled">target distribution</th>
                 <th scope="col">number of measured off-targets</th>
               </tr>
               </thead>
