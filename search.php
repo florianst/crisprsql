@@ -40,6 +40,7 @@ if (isset($result)) {
                 <th scope="col">target sequence</th>
                 <th scope="col">target region</th>
                 <th scope="col">assembly</th>
+                <th scope="col">cleavage rate</th>
                 <th scope="col">study</th>
               </tr>
               </thead>
@@ -61,7 +62,7 @@ if (isset($result)) {
                     $studies .= '<a href="https://www.ncbi.nlm.nih.gov/pubmed/'.$queryresult2["pubmed_id"].'" target="_new">'.$queryresult2["name"].'</a> ';
                 }
             }
-            echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier">'.$row["grna_target_sequence"].'</td><td style="font-family:Courier">'.$row["target_sequence"].'</td><td>'.$row["target_chr"].':'.$row["target_start"].'-'.$row["target_end"].'</td><td>'.$row["genome"].'</td><td>'.$studies.'</td></tr>';
+            echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier">'.$row["grna_target_sequence"].'</td><td style="font-family:Courier">'.$row["target_sequence"].'</td><td>'.$row["target_chr"].':'.$row["target_start"].'-'.$row["target_end"].'</td><td>'.$row["genome"].'</td><td>'.$row["cleavage_freq"].'</td><td>'.$studies.'</td></tr>';
         }
         
         echo "</tbody></table><br>";
