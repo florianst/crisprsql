@@ -10,6 +10,7 @@ $navpages = array("index.php"=>"Home", "studies.php"=>"Studies", "search.php"=>"
   <title>crisprSQL - CRISPR off-target database</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="format-detection" content="telephone=no">
   <link rel="stylesheet" href="/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/design.css">
   <link rel="stylesheet" href="/css/bootstrap-sortable.css">
