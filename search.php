@@ -44,6 +44,7 @@ if (isset($result)) {
                 <th scope="col">target region</th>
                 <th scope="col">assembly</th>
                 <th scope="col">cleavage rate</th>
+                <th scope="col">epigenetics markers</th>
                 <th scope="col">study</th>
               </tr>
               </thead>
@@ -65,7 +66,15 @@ if (isset($result)) {
                     $studies .= '<a href="https://www.ncbi.nlm.nih.gov/pubmed/'.$queryresult2["pubmed_id"].'" target="_new">'.$queryresult2["name"].'</a> ';
                 }
             }
-            echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier">'.$row["grna_target_sequence"].'</td><td style="font-family:Courier">'.$row["target_sequence"].'</td><td>'.$row["GC_count"].'</td><td>'.$row["target_chr"].':'.$row["target_start"].'-'.$row["target_end"].'</td><td>'.$row["genome"].'</td><td>'.$row["cleavage_freq"].'</td><td>'.$studies.'</td></tr>';
+            $epigen_str = '';
+            if (strlen($row["epigenetics_ids"]) > 0) {
+                $epigen_studies = explode(',', $row["epigenetics_ids"]);
+                foreach ($epigen_studies as $study_identifier) {
+                    if (strlen($study_identifier) > 2) { $epigen_str .= '<a href="https://www.encodeproject.org/search/?searchTerm='.$study_identifier.'" target="_new">'.$study_identifier.'</a>, '; }
+                }
+                $epigen_str = substr($epigen_str, 0, -2);
+            }
+            echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier">'.$row["grna_target_sequence"].'</td><td style="font-family:Courier">'.$row["target_sequence"].'</td><td>'.$row["GC_count"].'</td><td>'.$row["target_chr"].':'.$row["target_start"].'-'.$row["target_end"].'</td><td>'.$row["genome"].'</td><td>'.$row["cleavage_freq"].'</td><td>'.$epigen_str.'</td><td>'.$studies.'</td></tr>';
         }
         
         echo "</tbody></table><br>";
