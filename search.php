@@ -89,7 +89,7 @@ if (isset($result)) {
     $species = array("Human"=>"genome='hg19' OR genome='hg38'", "Rodents"=>"genome='rn5' OR genome='mm9' OR genome='mm10'");
     
     foreach ($species as $title => $cond) {
-        $result = $conn->query("SELECT id, genome, grna_target_chr, grna_target_start, grna_target_end, grna_target_sequence, grna_target_id FROM cleavage_data WHERE grna_target_id=id-1 AND ".$cond." GROUP BY grna_target_sequence LIMIT {$limit}");
+        $result = $conn->query("SELECT id, genome, grna_target_chr, grna_target_start, grna_target_end, grna_target_sequence, grna_target_id, cell_line FROM cleavage_data WHERE grna_target_id=id-1 AND ".$cond." GROUP BY grna_target_sequence, cell_line LIMIT {$limit}");
         if ($result->num_rows > 0) {
             echo "<h4>".$title."</h4><table class='table table-striped sortable'>";
             echo '<thead class="thead-dark">
@@ -98,9 +98,10 @@ if (isset($result)) {
                 <th scope="col">sequence</th>
                 <th scope="col">region</th>
                 <th scope="col">assembly</th>
+                <th scope="col">cell line</th>
                 <th scope="col">study</th>
                 <th scope="col" data-defaultsort="disabled">target distribution</th>
-                <th scope="col">number of measured off-targets</th>
+                <th scope="col">measured off-targets</th>
               </tr>
               </thead>
               <tbody>';
@@ -121,7 +122,7 @@ if (isset($result)) {
                     $result4 = $conn->query("SELECT target_chr, target_start, cleavage_freq, grna_target_chr, grna_target_start FROM cleavage_data WHERE grna_target_id=".$row["grna_target_id"]);
                     $targets = $result4->fetch_all(MYSQLI_ASSOC);
                     $i++;
-                    echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier"><form action="search.php" method="post" id="form'.$i.'"><input type="hidden" name="submit_rna" /><input type="hidden" name="guide" id="sgrna" value="'.$row["grna_target_sequence"].'" /><a href="#" class="submit-link" onclick="document.getElementById(\'form'.$i.'\').submit();">'.$row["grna_target_sequence"].'</a></form></td><td>'.$row["grna_target_chr"].':'.$row["grna_target_start"].'-'.$row["grna_target_end"].'</td><td>'.$row["genome"].'</td><td>'.$studies.'</td><td><img src="'.plotOfftargetProfile($targets).'" alt="offtarget distribution" /></td><td>'.$result3->num_rows.'</td></tr>';
+                    echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier"><form action="search.php" method="post" id="form'.$i.'"><input type="hidden" name="submit_rna" /><input type="hidden" name="guide" id="sgrna" value="'.$row["grna_target_sequence"].'" /><a href="#" class="submit-link" onclick="document.getElementById(\'form'.$i.'\').submit();">'.$row["grna_target_sequence"].'</a></form></td><td>'.$row["grna_target_chr"].':'.$row["grna_target_start"].'-'.$row["grna_target_end"].'</td><td>'.$row["genome"].'</td><td>'.$row["cell_line"].'</td><td>'.$studies.'</td><td><img src="'.plotOfftargetProfile($targets).'" alt="offtarget distribution" /></td><td>'.$result3->num_rows.'</td></tr>';
                 }
             }
             
