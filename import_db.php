@@ -60,9 +60,11 @@ $sqlCreateCleavageData = " CREATE TABLE IF NOT EXISTS cleavage_data (
 
 $result1 = $conn->query($sqlCreateEpigeneticsData); 
 $result2 = $conn->query($sqlCreateCleavageExperiments);
-$result3 = $conn->query($sqlCreateCleavageData); 
+$result3 = $conn->query($sqlCreateCleavageData);
+$result4 = $conn->query("SET [GLOBAL|SESSION] sql_mode='NO_AUTO_VALUE_ON_ZERO';"); // make sure MySQL starts numbering the first inserted data line with 0, otherwise we will lose line number 2 (ID=1) in the sqlite table due to the primary key constraint!
+$result5 = $conn->query("ALTER TABLE cleavage_data AUTO_INCREMENT=0;");            // the effect is not too big because even if we don't do this, we only lose said line but the correspondence of grna_target_id and id stays intact
 
-if ($result1 === TRUE && $result2 === TRUE && $result3 === TRUE) {
+if ($result1 === TRUE && $result2 === TRUE && $result3 === TRUE && $result4 === TRUE && $result5 === TRUE) {
     echo "Tables created successfully";
     
     // read sqlite .db file - path defined in class
