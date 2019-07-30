@@ -40,6 +40,7 @@ if (isset($result)) {
                 <th scope="col" data-defaultsort="disabled">No.</th>
                 <th scope="col">guide sequence</th>
                 <th scope="col">target sequence</th>
+                <th scope="col">mismatches</th>
                 <th scope="col">target GC count</th>
                 <th scope="col">target region</th>
                 <th scope="col">assembly</th>
@@ -74,7 +75,16 @@ if (isset($result)) {
                 }
                 $epigen_str = substr($epigen_str, 0, -2);
             }
-            echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier">'.$row["grna_target_sequence"].'</td><td style="font-family:Courier">'.$row["target_sequence"].'</td><td>'.$row["GC_count"].'</td><td>'.$row["target_chr"].':'.$row["target_start"].'-'.$row["target_end"].'</td><td>'.$row["genome"].'</td><td>'.$row["cleavage_freq"].'</td><td>'.$epigen_str.'</td><td>'.$studies.'</td></tr>';
+            
+            // highlight mismatches in target sequence
+            $targetseq  = '';
+            $mismatches = 0;
+            foreach (str_split($row["target_sequence"]) as $pos => $base) {
+                if ($row["grna_target_sequence"][$pos] == $base) { $targetseq .= $base; }
+                else { $targetseq .= "<b>".$base."</b>"; $mismatches++; }
+            }
+            
+            echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier">'.$row["grna_target_sequence"].'</td><td style="font-family:Courier">'.$targetseq.'</td><td>'.$mismatches.'</td><td>'.$row["GC_count"].'</td><td>'.$row["target_chr"].':'.$row["target_start"].'-'.$row["target_end"].'</td><td>'.$row["genome"].'</td><td>'.$row["cleavage_freq"].'</td><td>'.$epigen_str.'</td><td>'.$studies.'</td></tr>';
         }
         
         echo "</tbody></table><br>";
