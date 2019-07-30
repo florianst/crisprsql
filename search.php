@@ -75,7 +75,7 @@ if (isset($result)) {
             if (strlen($row["epigenetics_ids"]) > 0) {
                 $epigen_studies = array_unique(explode(',', $row["epigenetics_ids"]));
                 foreach ($epigen_studies as $study_identifier) {
-                    if (strlen($study_identifier) > 2) { $epigen_str .= epigenLink($study_identifier).', '; }
+                    if (strlen($study_identifier) > 2) { $epigen_str .= epigenLink($study_identifier, True, $conn).', '; }
                 }
                 $epigen_str = substr($epigen_str, 0, -2);
             }
@@ -132,7 +132,8 @@ if (isset($result)) {
                         $studies .= '<a href="https://www.ncbi.nlm.nih.gov/pubmed/'.$queryresult2["pubmed_id"].'" target="_new">'.$queryresult2["name"].'</a> ';
                     }
                 }
-                $result3 = $conn->query("SELECT * FROM cleavage_data WHERE grna_target_id=".$row["grna_target_id"]." AND id!=".($row["id"]-1));
+                // get number of off-targets
+                $result3 = $conn->query("SELECT * FROM cleavage_data WHERE grna_target_id=".$row["grna_target_id"]." AND id!=".$row["id"]);
                 if ($result3->num_rows > 1) {
                     // fetch all targets for the given guide in order to plot target distribution
                     $result4 = $conn->query("SELECT target_chr, target_start, cleavage_freq, grna_target_chr, grna_target_start FROM cleavage_data WHERE grna_target_id=".$row["grna_target_id"]);
