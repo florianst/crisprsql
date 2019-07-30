@@ -8,7 +8,11 @@ include "inc/plot_offtargetprofile.php";
 
 $limit = 500;
 
-if (isset($_POST["submit_rna"]) && isset($_POST["guide"])) {
+if (isset($_POST["submit_rna"]) && isset($_POST["guideid"])) {
+    $guideid = preg_replace("/[^0-9,.]/", '', $_POST["guideid"]);
+    $search = preg_replace("/[^A-Ta-t ]/", '', $_POST["guide"]);
+    $result = $conn->query("SELECT *, 2*LENGTH(target_sequence) - CHAR_LENGTH(REPLACE(target_sequence, \"C\", '')) - CHAR_LENGTH(REPLACE(target_sequence, \"G\", '')) AS GC_count FROM cleavage_data WHERE grna_target_id LIKE '%{$guideid}%'");
+} elseif (isset($_POST["submit_rna"]) && isset($_POST["guide"])) {
     $guide = preg_replace("/[^A-Ta-t ]/", '', $_POST["guide"]);
     $search = $guide;
     $result = $conn->query("SELECT *, 2*LENGTH(target_sequence) - CHAR_LENGTH(REPLACE(target_sequence, \"C\", '')) - CHAR_LENGTH(REPLACE(target_sequence, \"G\", '')) AS GC_count FROM cleavage_data WHERE grna_target_sequence LIKE '%{$guide}%'");
@@ -41,7 +45,7 @@ if (isset($result)) {
                 <th scope="col">guide sequence</th>
                 <th scope="col">target sequence</th>
                 <th scope="col">mismatches</th>
-                <th scope="col">target GC count</th>
+                <th scope="col">target GC</th>
                 <th scope="col">target region</th>
                 <th scope="col">assembly</th>
                 <th scope="col">cleavage rate</th>
@@ -94,12 +98,13 @@ if (isset($result)) {
     }
 } else {
     echo "<h2>Guides</h2>";
+    echo "<p>This table only includes guides for which at least one off-target has been measured.</p>";
     
     // display all guides
     $species = array("Human"=>"genome='hg19' OR genome='hg38'", "Rodents"=>"genome='rn5' OR genome='mm9' OR genome='mm10'");
     
     foreach ($species as $title => $cond) {
-        $result = $conn->query("SELECT id, genome, grna_target_chr, grna_target_start, grna_target_end, grna_target_sequence, grna_target_id, cell_line FROM cleavage_data WHERE grna_target_id=id-1 AND ".$cond." GROUP BY grna_target_sequence, cell_line LIMIT {$limit}");
+        $result = $conn->query("SELECT id, genome, grna_target_chr, grna_target_start, grna_target_end, grna_target_sequence, grna_target_id, cell_line FROM cleavage_data WHERE ".$cond." GROUP BY grna_target_id, cell_line, experiment_id ORDER BY grna_target_chr LIMIT {$limit}");
         if ($result->num_rows > 0) {
             echo "<h4>".$title."</h4><table class='table table-striped sortable'>";
             echo '<thead class="thead-dark">
@@ -129,10 +134,22 @@ if (isset($result)) {
                 }
                 $result3 = $conn->query("SELECT * FROM cleavage_data WHERE grna_target_id=".$row["grna_target_id"]." AND id!=".($row["id"]-1));
                 if ($result3->num_rows > 1) {
+                    // fetch all targets for the given guide in order to plot target distribution
                     $result4 = $conn->query("SELECT target_chr, target_start, cleavage_freq, grna_target_chr, grna_target_start FROM cleavage_data WHERE grna_target_id=".$row["grna_target_id"]);
                     $targets = $result4->fetch_all(MYSQLI_ASSOC);
+                    
+                    // visualise repeated guides, e.g. for different combination of cell line and study
+                    if ($grna_targetseq_old == $row["grna_target_sequence"]) { 
+                        $targetseq = '<div align="center">&mdash; " &mdash;</div>'; // replace both by placeholder
+                        $region = $targetseq;
+                    } else { 
+                        $targetseq = $row["grna_target_sequence"];
+                        $region = $row["grna_target_chr"].':'.$row["grna_target_start"].'-'.$row["grna_target_end"]; 
+                    }
+                    
                     $i++;
-                    echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier"><form action="search.php" method="post" id="form'.$i.'"><input type="hidden" name="submit_rna" /><input type="hidden" name="guide" id="sgrna" value="'.$row["grna_target_sequence"].'" /><a href="#" class="submit-link" onclick="document.getElementById(\'form'.$i.'\').submit();">'.$row["grna_target_sequence"].'</a></form></td><td>'.$row["grna_target_chr"].':'.$row["grna_target_start"].'-'.$row["grna_target_end"].'</td><td>'.$row["genome"].'</td><td>'.$row["cell_line"].'</td><td>'.$studies.'</td><td><img src="'.plotOfftargetProfile($targets).'" alt="offtarget distribution" /></td><td>'.$result3->num_rows.'</td></tr>';
+                    echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier"><form action="search.php" method="post" id="form'.$i.'"><input type="hidden" name="submit_rna" /><input type="hidden" name="guideid" id="sgrnaid" value="'.$row["grna_target_id"].'" /><input type="hidden" name="guide" id="sgrna" value="'.$row["grna_target_sequence"].'" /><a href="#" class="submit-link" onclick="document.getElementById(\'form'.$i.'\').submit();">'.$targetseq.'</a></form></td><td>'.$region.'</td><td>'.$row["genome"].'</td><td>'.$row["cell_line"].'</td><td>'.$studies.'</td><td><img src="'.plotOfftargetProfile($targets).'" alt="offtarget distribution" /></td><td>'.$result3->num_rows.'</td></tr>';
+                    $grna_targetseq_old = $row["grna_target_sequence"];
                 }
             }
             
