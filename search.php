@@ -71,7 +71,7 @@ if (isset($result)) {
             if (strlen($row["epigenetics_ids"]) > 0) {
                 $epigen_studies = array_unique(explode(',', $row["epigenetics_ids"]));
                 foreach ($epigen_studies as $study_identifier) {
-                    if (strlen($study_identifier) > 2) { $epigen_str .= '<a href="https://www.encodeproject.org/search/?searchTerm='.$study_identifier.'" target="_new">'.$study_identifier.'</a>, '; }
+                    if (strlen($study_identifier) > 2) { $epigen_str .= epigenLink($study_identifier).', '; }
                 }
                 $epigen_str = substr($epigen_str, 0, -2);
             }

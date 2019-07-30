@@ -1,5 +1,6 @@
 <?php 
 include 'inc/db.php';
+include 'inc/functions.php';
 
 $navpages = array("index.php"=>"Home", "studies.php"=>"Studies", "search.php"=>"Browse", "epigen.php"=>"Epigenetics", "download.php"=>"Download", "submit.php"=>"Submit", "contact.php"=>"Contact");
 

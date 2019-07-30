@@ -43,9 +43,8 @@ while($row = $result->fetch_assoc()) { // output data of each row
     $studyname = explode('_', $studyname)[0]; // gets rid of assay category (if included)
     $result2 = $conn->query("SELECT id FROM cleavage_data WHERE cell_line='{$row["cell_line"]}'");
     $result3 = $conn->query("SELECT id FROM cleavage_data WHERE epigenetics_ids LIKE '%{$studyname}%'");
-    if (substr($studyname, 0, 2) == "GS")     { $url = "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=".$studyname; } // GEO
-    elseif (substr($studyname, 0, 2) == "EN") { $url = "https://www.encodeproject.org/search/?searchTerm=".$studyname; }   // ENCODE
-    echo '<tr><th scope="row">'.$i.'</th><td><a href="'.$url.'" target="_blank">'.$studyname.'</a></td><td>'.$row["assay"].'</td><td>'.$row["cell_line"].'</td><td>'.$result2->num_rows.'</td><td>'.$result3->num_rows.'</td></tr>';
+    $epigen_link = epigenLink($studyname);
+    echo '<tr><th scope="row">'.$i.'</th><td>'.$epigen_link.'</td><td>'.$row["assay"].'</td><td>'.$row["cell_line"].'</td><td>'.$result2->num_rows.'</td><td>'.$result3->num_rows.'</td></tr>';
 }
 
 echo "</tbody>";
