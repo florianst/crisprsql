@@ -98,7 +98,7 @@ if (isset($result)) {
     }
 } else {
     echo "<h2>Guides</h2>";
-    echo "<p>This table only includes guides for which at least one off-target has been measured.</p>";
+    echo "<p>This table only includes guides for which at least two off-target have been measured.</p>";
     
     // display all guides
     $species = array("Human"=>"genome='hg19' OR genome='hg38'", "Rodents"=>"genome='rn5' OR genome='mm9' OR genome='mm10'");
@@ -132,7 +132,7 @@ if (isset($result)) {
                         $studies .= '<a href="https://www.ncbi.nlm.nih.gov/pubmed/'.$queryresult2["pubmed_id"].'" target="_new">'.$queryresult2["name"].'</a> ';
                     }
                 }
-                // get number of off-targets
+                // get number of off-targets to only include guides with at least two off-targets
                 $result3 = $conn->query("SELECT * FROM cleavage_data WHERE grna_target_id=".$row["grna_target_id"]." AND id!=".$row["id"]);
                 if ($result3->num_rows > 1) {
                     // fetch all targets for the given guide in order to plot target distribution
