@@ -24,14 +24,24 @@ if ($result->num_rows > 0) {
     $sumguides = 0;
     $sumepigen = 0;
     
-    while($row = $result->fetch_assoc()) { // output data of each row
+    while ($row = $result->fetch_assoc()) { // output data of each row
         $i++;
-        $result2 = $conn->query("SELECT id FROM cleavage_data WHERE experiment_id='{$row["experiment_id"]}' AND cell_line='{$row["cell_line"]}' GROUP BY grna_target_id");
-        $result3 = $conn->query("SELECT id FROM cleavage_data WHERE experiment_id='{$row["experiment_id"]}' AND epigenetics_ids != '' AND cell_line='{$row["cell_line"]}'");
+        // TODO: exclude guides without off-targets to comply with search.php
+        $guidecount = 0;
+        $guides = $conn->query("SELECT DISTINCT(grna_target_id) FROM cleavage_data WHERE experiment_id='{$row["experiment_id"]}' AND cell_line='{$row["cell_line"]}'");
+        while ($guide = $guides->fetch_assoc()) {
+            // check how many off-targets this guide has
+            $offtargets = $conn->query("SELECT id FROM cleavage_data WHERE grna_target_id='{$guide['grna_target_id']}' AND id != grna_target_id");
+            if ($offtargets->num_rows > 1) {
+                $guidecount++;
+            }
+        }
+
+        $result2 = $conn->query("SELECT id FROM cleavage_data WHERE experiment_id='{$row["experiment_id"]}' AND epigenetics_ids != '' AND cell_line='{$row["cell_line"]}'");
         $sumcount  += $row["count"];
-        $sumguides += $result2->num_rows;
-        $sumepigen += $result3->num_rows;
-        echo '<tr><th scope="row">'.$i.'</th><td><a href="https://www.ncbi.nlm.nih.gov/pubmed/'.$row["pubmed_id"].'" target="_blank">'.$row["name"].'</a></td><td>'.$row["cell_line"].'</td><td>'.$result2->num_rows.'</td><td>'.$row["count"].'</td><td>'.$result3->num_rows.'</td></tr>';
+        $sumguides += $guidecount;
+        $sumepigen += $result2->num_rows;
+        echo '<tr><th scope="row">'.$i.'</th><td><a href="https://www.ncbi.nlm.nih.gov/pubmed/'.$row["pubmed_id"].'" target="_blank">'.$row["name"].'</a></td><td>'.$row["cell_line"].'</td><td>'.$guidecount.'</td><td>'.$row["count"].'</td><td>'.$result2->num_rows.'</td></tr>';
     }
     echo '<tr><th scope="row">sum</th><td></td><td></td><td>'.$sumguides.'</td><td>'.$sumcount.'</td><td>'.$sumepigen.'</td></tr>';
     echo "</tbody></table>";
