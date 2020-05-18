@@ -25,6 +25,14 @@ include "inc/header.php";
   		</form><br>
         <form action="search.php" method="post" enctype="multipart/form-data">
           <div class="input-group">
+            <input type="text" class="form-control" id="geneid" placeholder="search gene ID" name="geneid">
+            <div class="input-group-append">
+    			<button class="btn btn-primary" type="submit" name="submit_geneid">Search</button>
+  			</div>
+  		  </div>  			
+  		</form><br>
+        <form action="search.php" method="post" enctype="multipart/form-data">
+          <div class="input-group">
             <input type="text" class="form-control" id="target" placeholder="search target sequence" name="target">
             <div class="input-group-append">
     			<button class="btn btn-primary" type="submit" name="submit_target">Search</button>

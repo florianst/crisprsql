@@ -20,6 +20,10 @@ if (isset($_POST["submit_rna"]) && isset($_POST["guideid"])) {
     $target = preg_replace("/[^A-Ta-t ]/", '', $_POST["target"]);
     $search = $target;
     $result = $conn->query("SELECT *, 2*LENGTH(target_sequence) - CHAR_LENGTH(REPLACE(target_sequence, \"C\", '')) - CHAR_LENGTH(REPLACE(target_sequence, \"G\", '')) AS GC_count FROM cleavage_data WHERE target_sequence LIKE '%{$target}%'");
+} elseif (isset($_POST["submit_geneid"]) && isset($_POST["geneid"])) {
+    $geneid = preg_replace("/[^A-Ta-t0-9.\- ]/", '', $_POST["geneid"]);
+    $search = $geneid;
+    $result = $conn->query("SELECT *, 2*LENGTH(target_sequence) - CHAR_LENGTH(REPLACE(target_sequence, \"C\", '')) - CHAR_LENGTH(REPLACE(target_sequence, \"G\", '')) AS GC_count FROM cleavage_data WHERE target_geneid LIKE '%{$geneid}%'");
 } elseif (isset($_POST["submit_region"]) && isset($_POST["targetregion"])) {
     $targetregion = $_POST["targetregion"];
     if (preg_match("/^(chr)[0-9XVIY]{1,2}:[0-9]{1,10}-[0-9]{1,10}$/", $targetregion)) { // verify string is a proper region
