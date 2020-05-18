@@ -16,6 +16,7 @@ if ($result->num_rows > 0) {
             <th scope="col">total guides</th>
             <th scope="col">total targets</th>
             <th scope="col">epigenetically annotated targets</th>
+            <th scope="col">cleaved gene IDs (CF > 1%)</th>
           </tr>
           </thead>
           <tbody>';
@@ -41,9 +42,12 @@ if ($result->num_rows > 0) {
         $sumcount  += $row["count"];
         $sumguides += $guidecount;
         $sumepigen += $result2->num_rows;
-        echo '<tr><th scope="row">'.$i.'</th><td><a href="https://www.ncbi.nlm.nih.gov/pubmed/'.$row["pubmed_id"].'" target="_blank">'.$row["name"].'</a></td><td>'.$row["cell_line"].'</td><td>'.$guidecount.'</td><td>'.$row["count"].'</td><td>'.$result2->num_rows.'</td></tr>';
+        
+        $result2 = $conn->query("SELECT DISTINCT(target_geneid) FROM cleavage_data WHERE experiment_id='{$row["experiment_id"]}' AND cell_line='{$row["cell_line"]}' AND LENGTH(target_geneid) > 1 AND cleavage_freq>0.01 ORDER BY cleavage_freq DESC");
+        $geneids = array_column($result2->fetch_all(), 0);
+        echo '<tr><th scope="row">'.$i.'</th><td><a href="https://www.ncbi.nlm.nih.gov/pubmed/'.$row["pubmed_id"].'" target="_blank">'.$row["name"].'</a></td><td>'.$row["cell_line"].'</td><td>'.$guidecount.'</td><td>'.$row["count"].'</td><td>'.$result2->num_rows.'</td><td>'.join(", ", $geneids).'</td></tr>';
     }
-    echo '<tr><th scope="row">sum</th><td></td><td></td><td>'.$sumguides.'</td><td>'.$sumcount.'</td><td>'.$sumepigen.'</td></tr>';
+    echo '<tr><th scope="row">sum</th><td></td><td></td><td>'.$sumguides.'</td><td>'.$sumcount.'</td><td>'.$sumepigen.'</td><td></td></tr>';
     echo "</tbody></table>";
 }
 
