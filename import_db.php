@@ -1,4 +1,4 @@
-<?php 
+<?php
 // import sqlite3 .db file into MySQL database
 
 include 'inc/db.php';
@@ -18,15 +18,17 @@ $sqlCreateEpigeneticsData = " CREATE TABLE IF NOT EXISTS epigenetics_experiments
                                 file_format INT,
                                 url TEXT
                             ); ";
-                                
+
 $sqlCreateCleavageExperiments = " CREATE TABLE IF NOT EXISTS cleavage_experiments (
                                 id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
                                 name TEXT,
                                 url TEXT,
+                                assay TEXT,
+                                whole_genome BOOLEAN,
                                 pubmed_id INT UNSIGNED,
                                 doi INT UNSIGNED
                                 ); ";
-                                
+
 $sqlCreateCleavageData = " CREATE TABLE IF NOT EXISTS cleavage_data (
                                 id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
                                 experiment_id INT UNSIGNED,
@@ -35,6 +37,8 @@ $sqlCreateCleavageData = " CREATE TABLE IF NOT EXISTS cleavage_data (
                                 target_end INT UNSIGNED,
                                 target_strand VARCHAR(255),
                                 target_sequence VARCHAR(255),
+                                target_context VARCHAR(255),
+                                target_geneid TEXT,
                                 grna_target_id INT UNSIGNED,
                                 grna_target_chr VARCHAR(255),
                                 grna_target_start INT UNSIGNED,
@@ -58,22 +62,22 @@ $sqlCreateCleavageData = " CREATE TABLE IF NOT EXISTS cleavage_data (
                                 energy_5 FLOAT
                             ); ";
 
-$result1 = $conn->query($sqlCreateEpigeneticsData); 
+$result1 = $conn->query($sqlCreateEpigeneticsData);
 $result2 = $conn->query($sqlCreateCleavageExperiments);
 $result3 = $conn->query($sqlCreateCleavageData);
-$result4 = $conn->query("SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO';");       // make sure MySQL starts numbering the first inserted data line with 0, otherwise we will lose line number 2 (ID=1) in the sqlite table due to the primary key constraint!
-$result5 = $conn->query("ALTER TABLE cleavage_data AUTO_INCREMENT=0;"); // the effect is not too big because even if we don't do this, we only lose said line but the correspondence of grna_target_id and id stays intact
+$result4 = $conn->query("SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO';"); // make sure MySQL starts numbering the first inserted data line with 0, otherwise we will lose line number 2 (ID=1) in the sqlite table due to the primary key constraint!echo $result4;
+$result5 = $conn->query("ALTER TABLE cleavage_data AUTO_INCREMENT=0;");            // the effect is not too big because even if we don't do this, we only lose said line but the correspondence of grna_target_id and id stays intactecho $result5;
 
 if ($result1 === TRUE && $result2 === TRUE && $result3 === TRUE && $result4 === TRUE && $result5 === TRUE) {
     echo "Tables created successfully";
-    
+
     // read sqlite .db file - path defined in class
-    $db = new SQLiteDB("../haeussler_onandoff_measuredonly.db");
+    $db = new SQLiteDB("../offtarget_140520_measuredonly.db");
     $tables = array("epigenetics_experiments", "cleavage_experiments", "cleavage_data");
-    
+
     foreach ($tables as $table) {
         $query = $db->query('SELECT * FROM '.$table);
-        
+
         while ($row = $query->fetchArray(SQLITE3_ASSOC)) {
             $columns = implode(", ", array_keys($row));
             $escaped_values = array_map(array($conn, 'real_escape_string'), array_values($row));
@@ -81,16 +85,16 @@ if ($result1 === TRUE && $result2 === TRUE && $result3 === TRUE && $result4 === 
             $mysql = "INSERT INTO `".$table."`($columns) VALUES ('$values')";
             $result4 = $conn->query($mysql);
         }
-        if ($result4 === TRUE) { 
-            echo "<br> ".$table." inserted successfully"; 
-        } else { 
-            echo "<br>Error in ".$table.": " . "<br>" . $conn->error; 
+        if ($result4 === TRUE) {
+            echo "<br> ".$table." inserted successfully";
+        } else {
+            echo "<br>Error in ".$table.": " . "<br>" . $conn->error;
         }
-    
+
     }
-    
-    
-    
+
+
+
 } else {
     echo "Error: " . "<br>" . $conn->error;
 }
