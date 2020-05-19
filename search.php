@@ -21,7 +21,7 @@ if (isset($_POST["submit_rna"]) && isset($_POST["guideid"])) {
     $search = $target;
     $result = $conn->query("SELECT *, 2*LENGTH(target_sequence) - CHAR_LENGTH(REPLACE(target_sequence, \"C\", '')) - CHAR_LENGTH(REPLACE(target_sequence, \"G\", '')) AS GC_count FROM cleavage_data WHERE target_sequence LIKE '%{$target}%'");
 } elseif (isset($_POST["submit_geneid"]) && isset($_POST["geneid"])) {
-    $geneid = preg_replace("/[^A-Ta-t0-9.\- ]/", '', $_POST["geneid"]);
+    $geneid = preg_replace("/[^A-Za-z0-9.\- ]/", '', $_POST["geneid"]);
     $search = $geneid;
     $result = $conn->query("SELECT *, 2*LENGTH(target_sequence) - CHAR_LENGTH(REPLACE(target_sequence, \"C\", '')) - CHAR_LENGTH(REPLACE(target_sequence, \"G\", '')) AS GC_count FROM cleavage_data WHERE target_geneid LIKE '%{$geneid}%'");
 } elseif (isset($_POST["submit_region"]) && isset($_POST["targetregion"])) {
@@ -108,7 +108,7 @@ if (isset($result)) {
     $species = array("Human"=>"genome='hg19' OR genome='hg38'", "Rodents"=>"genome='rn5' OR genome='mm9' OR genome='mm10'");
     
     foreach ($species as $title => $cond) {
-        $result = $conn->query("SELECT id, genome, grna_target_chr, grna_target_start, grna_target_end, grna_target_sequence, grna_target_id, cell_line FROM cleavage_data WHERE ".$cond." GROUP BY grna_target_id, cell_line, experiment_id ORDER BY grna_target_chr LIMIT {$limit}");
+        $result = $conn->query("SELECT id, genome, grna_target_chr, grna_target_start, grna_target_end, grna_target_sequence, grna_target_id, target_geneid, cell_line FROM cleavage_data WHERE ".$cond." GROUP BY grna_target_id, cell_line, experiment_id ORDER BY IF (grna_target_chr = 'chrX' OR grna_target_chr = 'chrY' OR grna_target_chr='chrMT', 50, CAST(SUBSTRING_INDEX(grna_target_chr, 'chr', -1) AS unsigned)) LIMIT {$limit}");
         if ($result->num_rows > 0) {
             echo "<h4>".$title."</h4><table class='table table-striped sortable'>";
             echo '<thead class="thead-dark">
@@ -116,6 +116,7 @@ if (isset($result)) {
                 <th scope="col" data-defaultsort="disabled">No.</th>
                 <th scope="col">sequence</th>
                 <th scope="col">region</th>
+                <th scope="col">gene ID</th>
                 <th scope="col">assembly</th>
                 <th scope="col">cell line</th>
                 <th scope="col">study</th>
@@ -131,9 +132,10 @@ if (isset($result)) {
                 $studies = '';
                 $result2 = $conn->query("SELECT DISTINCT experiment_id FROM cleavage_data WHERE id=".$row["id"]);
                 while($row2 = $result2->fetch_assoc()) {
-                    $query2 = $conn->query("SELECT name, pubmed_id FROM cleavage_experiments WHERE id=".$row2["experiment_id"]);
+                    $query2 = $conn->query("SELECT name, pubmed_id, doi FROM cleavage_experiments WHERE id=".$row2["experiment_id"]);
                     while ($queryresult2 = $query2->fetch_assoc()) {
-                        $studies .= '<a href="https://www.ncbi.nlm.nih.gov/pubmed/'.$queryresult2["pubmed_id"].'" target="_new">'.$queryresult2["name"].'</a> ';
+                        if (strlen($queryresult2["doi"]) > 1) { $weblink = $queryresult2["doi"]; } else { $weblink = 'https://www.ncbi.nlm.nih.gov/pubmed/'.$queryresult2["pubmed_id"]; }
+                        $studies .= '<a href="'.$weblink.'" target="_new">'.$queryresult2["name"].'</a> ';
                     }
                 }
                 // get number of off-targets to only include guides with at least two off-targets
@@ -143,17 +145,18 @@ if (isset($result)) {
                     $result4 = $conn->query("SELECT target_chr, target_start, cleavage_freq, grna_target_chr, grna_target_start FROM cleavage_data WHERE grna_target_id=".$row["grna_target_id"]);
                     $targets = $result4->fetch_all(MYSQLI_ASSOC);
                     
-                    // visualise repeated guides, e.g. for different combination of cell line and study
+                    // visualise repeated guides, e.g. for different combination of cell line and study TODO: do this using rowspan
                     if ($grna_targetseq_old == $row["grna_target_sequence"]) { 
                         $targetseq = '<div align="center">&mdash; " &mdash;</div>'; // replace both by placeholder
                         $region = $targetseq;
                     } else { 
                         $targetseq = $row["grna_target_sequence"];
-                        $region = $row["grna_target_chr"].':'.$row["grna_target_start"].'-'.$row["grna_target_end"]; 
+                        if (strlen($row["grna_target_chr"]) >= 4) { $region = $row["grna_target_chr"].':'.$row["grna_target_start"].'-'.$row["grna_target_end"]; }
+                        else { $region = "<i>n/a</i>"; }
                     }
                     
                     $i++;
-                    echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier"><form action="search.php" method="post" id="form'.$i.'"><input type="hidden" name="submit_rna" /><input type="hidden" name="guideid" id="sgrnaid" value="'.$row["grna_target_id"].'" /><input type="hidden" name="guide" id="sgrna" value="'.$row["grna_target_sequence"].'" /><a href="#" class="submit-link" onclick="document.getElementById(\'form'.$i.'\').submit();">'.$targetseq.'</a></form></td><td>'.$region.'</td><td>'.$row["genome"].'</td><td>'.$row["cell_line"].'</td><td>'.$studies.'</td><td><img src="'.plotOfftargetProfile($targets).'" alt="offtarget distribution" /></td><td>'.$result3->num_rows.'</td></tr>';
+                    echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier"><form action="search.php" method="post" id="form'.$i.'"><input type="hidden" name="submit_rna" /><input type="hidden" name="guideid" id="sgrnaid" value="'.$row["grna_target_id"].'" /><input type="hidden" name="guide" id="sgrna" value="'.$row["grna_target_sequence"].'" /><a href="#" class="submit-link" onclick="document.getElementById(\'form'.$i.'\').submit();">'.$targetseq.'</a></form></td><td>'.$region.'</td><td>'.$row["target_geneid"].'</td><td>'.$row["genome"].'</td><td>'.$row["cell_line"].'</td><td>'.$studies.'</td><td><img src="'.plotOfftargetProfile($targets).'" alt="offtarget distribution" /></td><td>'.$result3->num_rows.'</td></tr>';
                     $grna_targetseq_old = $row["grna_target_sequence"];
                 }
             }
