@@ -8,22 +8,23 @@ include "inc/plot_offtargetprofile.php";
 
 $limit = 500;
 
+$querystart = "SELECT *, 2*LENGTH(target_sequence) - CHAR_LENGTH(REPLACE(target_sequence, \"C\", '')) - CHAR_LENGTH(REPLACE(target_sequence, \"G\", '')) AS GC_count";
 if (isset($_POST["submit_rna"]) && isset($_POST["guideid"])) {
     $guideid = preg_replace("/[^0-9,.]/", '', $_POST["guideid"]);
     $search = preg_replace("/[^A-Ta-t ]/", '', $_POST["guide"]);
-    $result = $conn->query("SELECT *, 2*LENGTH(target_sequence) - CHAR_LENGTH(REPLACE(target_sequence, \"C\", '')) - CHAR_LENGTH(REPLACE(target_sequence, \"G\", '')) AS GC_count FROM cleavage_data WHERE grna_target_id LIKE '%{$guideid}%'");
+    $result = $conn->query($querystart." FROM cleavage_data WHERE grna_target_id LIKE '%{$guideid}%'");
 } elseif (isset($_POST["submit_rna"]) && isset($_POST["guide"])) {
     $guide = preg_replace("/[^A-Ta-t ]/", '', $_POST["guide"]);
     $search = $guide;
-    $result = $conn->query("SELECT *, 2*LENGTH(target_sequence) - CHAR_LENGTH(REPLACE(target_sequence, \"C\", '')) - CHAR_LENGTH(REPLACE(target_sequence, \"G\", '')) AS GC_count FROM cleavage_data WHERE grna_target_sequence LIKE '%{$guide}%'");
+    $result = $conn->query($querystart." FROM cleavage_data WHERE grna_target_sequence LIKE '%{$guide}%'");
 } elseif (isset($_POST["submit_target"]) && isset($_POST["target"])) {
     $target = preg_replace("/[^A-Ta-t ]/", '', $_POST["target"]);
     $search = $target;
-    $result = $conn->query("SELECT *, 2*LENGTH(target_sequence) - CHAR_LENGTH(REPLACE(target_sequence, \"C\", '')) - CHAR_LENGTH(REPLACE(target_sequence, \"G\", '')) AS GC_count FROM cleavage_data WHERE target_sequence LIKE '%{$target}%'");
+    $result = $conn->query($querystart." FROM cleavage_data WHERE target_sequence LIKE '%{$target}%'");
 } elseif (isset($_POST["submit_geneid"]) && isset($_POST["geneid"])) {
     $geneid = preg_replace("/[^A-Za-z0-9.\- ]/", '', $_POST["geneid"]);
     $search = $geneid;
-    $result = $conn->query("SELECT *, 2*LENGTH(target_sequence) - CHAR_LENGTH(REPLACE(target_sequence, \"C\", '')) - CHAR_LENGTH(REPLACE(target_sequence, \"G\", '')) AS GC_count FROM cleavage_data WHERE target_geneid LIKE '%{$geneid}%'");
+    $result = $conn->query($querystart." FROM cleavage_data WHERE target_geneid LIKE '%{$geneid}%'");
 } elseif (isset($_POST["submit_region"]) && isset($_POST["targetregion"])) {
     $targetregion = $_POST["targetregion"];
     if (preg_match("/^(chr)[0-9XVIY]{1,2}:[0-9]{1,10}-[0-9]{1,10}$/", $targetregion)) { // verify string is a proper region
@@ -51,9 +52,10 @@ if (isset($result)) {
                 <th scope="col">mismatches</th>
                 <th scope="col">target GC</th>
                 <th scope="col">target region</th>
-                <th scope="col">assembly</th>
+                <th scope="col">target gene ID</th>
                 <th scope="col">cleavage rate</th>
                 <th scope="col">epigenetics markers</th>
+                <th scope="col">cell line</th>
                 <th scope="col">study</th>
               </tr>
               </thead>
@@ -92,7 +94,7 @@ if (isset($result)) {
                 else { $targetseq .= "<b>".$base."</b>"; $mismatches++; }
             }
             
-            echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier">'.$row["grna_target_sequence"].'</td><td style="font-family:Courier">'.$targetseq.'</td><td>'.$mismatches.'</td><td>'.$row["GC_count"].'</td><td>'.$row["target_chr"].':'.$row["target_start"].'-'.$row["target_end"].'</td><td>'.$row["genome"].'</td><td>'.$row["cleavage_freq"].'</td><td>'.$epigen_str.'</td><td>'.$studies.'</td></tr>';
+            echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier"><form action="search.php" method="post" id="form'.$i.'"><input type="hidden" name="submit_rna" /><input type="hidden" name="guideid" id="sgrnaid" value="'.$row["grna_target_id"].'" /><input type="hidden" name="guide" id="sgrna" value="'.$row["grna_target_sequence"].'" /><a href="#" class="submit-link" onclick="document.getElementById(\'form'.$i.'\').submit();">'.$row["grna_target_sequence"].'</a></form></td><td style="font-family:Courier">'.$targetseq.'</td><td>'.$mismatches.'</td><td>'.$row["GC_count"].'</td><td>'.$row["target_chr"].':'.$row["target_start"].'-'.$row["target_end"].'</td><td>'.$row["target_geneid"].'</td><td>'.$row["cleavage_freq"].'</td><td>'.$epigen_str.'</td><td>'.$row["cell_line"].'</td><td>'.$studies.'</td></tr>';
         }
         
         echo "</tbody></table><br>";
