@@ -26,7 +26,7 @@ $sqlCreateCleavageExperiments = " CREATE TABLE IF NOT EXISTS cleavage_experiment
                                 assay TEXT,
                                 whole_genome BOOLEAN,
                                 pubmed_id INT UNSIGNED,
-                                doi INT UNSIGNED
+                                doi TEXT
                                 ); ";
 
 $sqlCreateCleavageData = " CREATE TABLE IF NOT EXISTS cleavage_data (
