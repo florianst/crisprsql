@@ -19,6 +19,7 @@ include "inc/header.php";
           <div class="input-group">
             <input type="text" class="form-control" id="sgrna" placeholder="search guide sequence" name="guide">
             <div class="input-group-append">
+                <button class="btn btn btn-outline-secondary" type="button" name="ex_rna" onclick="document.getElementById('sgrna').value = 'GAACACAAAGCATAGACTGCGGG';">Example</button>
     			<button class="btn btn-primary" type="submit" name="submit_rna">Search</button>
   			</div>
   		  </div>
@@ -27,6 +28,7 @@ include "inc/header.php";
           <div class="input-group">
             <input type="text" class="form-control" id="geneid" placeholder="search gene ID" name="geneid">
             <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" name="ex_geneid" onclick="document.getElementById('geneid').value = 'EMX1';">Example</button>
     			<button class="btn btn-primary" type="submit" name="submit_geneid">Search</button>
   			</div>
   		  </div>  			
@@ -35,6 +37,7 @@ include "inc/header.php";
           <div class="input-group">
             <input type="text" class="form-control" id="target" placeholder="search target sequence" name="target">
             <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" name="ex_target" onclick="document.getElementById('target').value = 'GAACACAAAGCATAGACTGCGGG';">Example</button>
     			<button class="btn btn-primary" type="submit" name="submit_target">Search</button>
   			</div>
   		  </div>  			
@@ -43,6 +46,7 @@ include "inc/header.php";
           <div class="input-group">
             <input type="text" class="form-control" id="region" placeholder="search target region (chr1:15000-55000)" name="targetregion">
             <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" name="ex_region" onclick="document.getElementById('region').value = 'chr3:46400000-46420000';">Example</button>
     			<button class="btn btn-primary" type="submit" name="submit_region">Search</button>
   			</div>
   		  </div>
