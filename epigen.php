@@ -3,7 +3,26 @@ include "inc/header.php";
 ?>
 
 <h2>Epigenetics Studies</h2>
-<p>These are the epigenetics studies which are currently included in the database.</p>
+
+<?php
+$result = $conn->query("SELECT COUNT(cleavage_data.id) FROM cleavage_data");
+$num_total = $result->fetch_array()[0];
+
+$result = $conn->query("SELECT assays_per_id, COUNT(assays_per_id) AS count FROM (SELECT COUNT(assay) AS assays_per_id FROM 
+                        (SELECT DISTINCT epigenetics_experiments.assay, cleavage_data.id FROM cleavage_data 
+                            LEFT JOIN epigenetics_experiments ON cleavage_data.cell_line=epigenetics_experiments.cell_line AND cleavage_data.genome=epigenetics_experiments.genome) AS SubSubQuery 
+                        GROUP BY id) AS SubQuery GROUP BY assays_per_id ORDER BY assays_per_id");
+$num_coveredbyepigen = $result->fetch_all();
+$num_nocover    = $num_coveredbyepigen[0][1];
+$num_atleastone = $num_total - $num_nocover;
+$num_allcover   = end($num_coveredbyepigen)[1];
+
+$percentage_atleastone = round($num_atleastone / $num_total * 100, 1);
+$percentage_allcover   = round($num_allcover   / $num_total * 100, 1);
+?>
+
+<p>Below are the epigenetics studies which are currently included in the database. 
+With these studies, we are able to annotate <?php echo $percentage_atleastone; ?>% of our data with at least one epigenetic marker, and <?php echo $percentage_allcover; ?>% of our data with all epigenetic markers.</p>
 
 
 <?php
@@ -28,8 +47,8 @@ if ($result->num_rows > 0) {
         $studyname = explode('.', $studyname)[0]; // gets rid of file ending
         $studyname = explode('_', $studyname)[0]; // gets rid of assay category (if included)
         $assay = strtolower($row["assay"]);
-        $result2 = $conn->query("SELECT id FROM cleavage_data WHERE cell_line='{$row["cell_line"]}' AND epigen_{$assay} != ''");
-        $result3 = $conn->query("SELECT id FROM cleavage_data WHERE epigenetics_ids LIKE '%EH%' AND cell_line='{$row["cell_line"]}' AND epigen_{$assay} != ''");
+        $result2 = $conn->query("SELECT id FROM cleavage_data WHERE cell_line='{$row["cell_line"]}' AND epigen_{$assay} != '' AND genome='{$row["genome"]}'");
+        $result3 = $conn->query("SELECT id FROM cleavage_data WHERE epigenetics_ids LIKE '%EH%' AND cell_line='{$row["cell_line"]}' AND epigen_{$assay} != ''  AND genome='{$row["genome"]}'");
         echo '<tr><th scope="row">'.$i.'</th><td><a href="http://screen.encodeproject.org/" target="_blank">SCREEN ENCODE v4</a></td><td>'.$row["assay"].'</td><td>'.$row["cell_line"].'</td><td>'.$result2->num_rows.'</td><td>'.$result3->num_rows.'</td></tr>';
     }
 }
