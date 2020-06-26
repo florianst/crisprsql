@@ -5,24 +5,30 @@ include "inc/header.php";
 <h2>Epigenetics Studies</h2>
 
 <?php
-$result = $conn->query("SELECT COUNT(cleavage_data.id) FROM cleavage_data");
+$result = $conn->query("SELECT COUNT(cleavage_data.id) FROM cleavage_data WHERE cell_line != ''");
 $num_total = $result->fetch_array()[0];
 
 $result = $conn->query("SELECT assays_per_id, COUNT(assays_per_id) AS count FROM (SELECT COUNT(assay) AS assays_per_id FROM 
                         (SELECT DISTINCT epigenetics_experiments.assay, cleavage_data.id FROM cleavage_data 
-                            LEFT JOIN epigenetics_experiments ON cleavage_data.cell_line=epigenetics_experiments.cell_line AND cleavage_data.genome=epigenetics_experiments.genome) AS SubSubQuery 
+                            LEFT JOIN epigenetics_experiments ON cleavage_data.cell_line=epigenetics_experiments.cell_line AND cleavage_data.genome=epigenetics_experiments.genome 
+                            WHERE cleavage_data.cell_line != '') AS SubSubQuery 
                         GROUP BY id) AS SubQuery GROUP BY assays_per_id ORDER BY assays_per_id");
 $num_coveredbyepigen = $result->fetch_all();
-$num_nocover    = $num_coveredbyepigen[0][1];
-$num_atleastone = $num_total - $num_nocover;
-$num_allcover   = end($num_coveredbyepigen)[1];
+$num_nocover      = $num_coveredbyepigen[0][1];
+$num_atleastone   = $num_total - $num_nocover;
+$num_atleasttwo   = $num_atleastone - $num_coveredbyepigen[1][1];
+$num_atleastthree = $num_atleasttwo - $num_coveredbyepigen[2][1];
+$num_allcover     = end($num_coveredbyepigen)[1];
 
-$percentage_atleastone = round($num_atleastone / $num_total * 100, 1);
-$percentage_allcover   = round($num_allcover   / $num_total * 100, 1);
+$percentage_atleastone   = round($num_atleastone   / $num_total * 100, 1);
+$percentage_atleasttwo   = round($num_atleasttwo   / $num_total * 100, 1);
+$percentage_atleastthree = round($num_atleastthree / $num_total * 100, 1);
+$percentage_allcover     = round($num_allcover     / $num_total * 100, 1);
 ?>
 
-<p>Below are the epigenetics studies which are currently included in the database. 
-With these studies, we are able to annotate <?php echo $percentage_atleastone; ?>% of our data with at least one epigenetic marker, and <?php echo $percentage_allcover; ?>% of our data with all epigenetic markers.</p>
+<p>We have annotated the cleavage data points with a choice of five epigenetic markers. The respective studies are linked below. <br>
+With these studies, we are able to check annotation for <?php echo $percentage_atleasttwo; ?>% of our cell-line data with at least two epigenetic markers, <?php echo $percentage_atleastthree; ?>% with at least three epigenetic markers
+and <?php echo $percentage_allcover; ?>% of our data with all five epigenetic markers.</p>
 
 
 <?php
