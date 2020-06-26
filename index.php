@@ -4,7 +4,16 @@ include "inc/header.php";
   <div class="row">
     <div class="col-sm-4">
       <img src="4un3_small.jpg" style="height:270px"/>
-      <p style="font-size:85%">Sp-Cas9 protein bound to a dsDNA (blue) guided by an sgRNA (orange).</p>
+      <p style="font-size:85%">Sp-Cas9 protein bound to a dsDNA (blue) guided by an sgRNA (orange). PDB: 4UN3.</p>
+      <h5>Database statistics</h5>
+      <?php 
+      // show studies involved, number of guides, number of targets, number of targets with at least 1 epigenetic marker
+      $experiments = $conn->query("SELECT DISTINCT experiment_id FROM cleavage_data");
+      $guides      = $conn->query("SELECT DISTINCT grna_target_id FROM cleavage_data");
+      $targets     = $conn->query("SELECT id FROM cleavage_data");
+      $targets_epi = $conn->query("SELECT id FROM cleavage_data WHERE epigenetics_ids != ''");
+      echo "<p>crisprSQL contains ".$experiments->num_rows." <a href='studies.php'>studies</a>, totalling ".$guides->num_rows." <a href='search.php'>guides</a> and ".$targets->num_rows." targets, ".$targets_epi->num_rows." of which have at least one <a href='epigen.php'>epigenetic marker</a> attached.</p>";
+      ?>
       <h5>Contribute to database</h5>
       <p>crisprSQL invites submissions of Cas9 off-target indel frequency data, in order to be included in the online database and the benchmark dataset. Please click <a href="submit.php">here</a>.</p>
       <hr class="d-sm-none">
@@ -53,20 +62,17 @@ include "inc/header.php";
   		</form>
       </div>
       <br>
-      <h3>About crisprSQL</h3>
+      <h4>About crisprSQL</h4>
       <p>crisprSQL is a SQL-based database for CRISPR/Cas9 off-target cleavage assays. 
-      It is a one-stop source for epigenetically annotated, base-pair resolved cleavage frequency distributions to aid with guide design. 
-      Attached gene IDs make this high-resolution data usable for knockout screens, functional genomics and transcriptomics research.</p>
+      It is a one-stop source for epigenetically annotated, base-pair resolved cleavage frequency distributions.</p>
+      <p>This hand-curated, comprehensive dataset can act as an insight into state-of-the-art technologies driving transgenics,
+      inform guide RNA design for genome engineering, and serve as a shared, transparent basis for modelling the interaction of CRISPR/Cas with DNA. 
+      Attached gene IDs make the high-resolution data usable for the first time for informing knockout screens, functional genomics and transcriptomics research.</p>
       <br>
-      <h5>Database statistics</h5>
-      <?php 
-      // show studies involved, number of guides, number of targets, number of targets with at least 1 epigenetic marker
-      $experiments = $conn->query("SELECT DISTINCT experiment_id FROM cleavage_data");
-      $guides      = $conn->query("SELECT DISTINCT grna_target_id FROM cleavage_data");
-      $targets     = $conn->query("SELECT id FROM cleavage_data");
-      $targets_epi = $conn->query("SELECT id FROM cleavage_data WHERE epigenetics_ids != ''");
-      echo "<p>crisprSQL contains ".$experiments->num_rows." <a href='studies.php'>studies</a>, totalling ".$guides->num_rows." <a href='search.php'>guides</a> and ".$targets->num_rows." targets, ".$targets_epi->num_rows." of which have at least one <a href='epigen.php'>epigenetic marker</a> attached.</p>";
-      ?>
+      <h4>How To</h4>
+      <p>Have a look at the <a href="studies.php">included studies</a> or <a href="search.php">browse through the included guide RNAs</a>.
+      From there, clicking on a guide takes you to its off-target profile, complete with <a href="epigen.php">epigenetic annotations</a>.</p>
+      
     </div>
   </div>
 
