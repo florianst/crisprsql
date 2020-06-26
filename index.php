@@ -4,15 +4,15 @@ include "inc/header.php";
   <div class="row">
     <div class="col-sm-4">
       <img src="4un3_small.jpg" style="height:270px"/>
-      <p style="font-size:85%">Sp-Cas9 protein bound to a dsDNA (blue) guided by an sgRNA (gold).</p>
-      <h3>About crisprSQL</h3>
-      <p>crisprSQL is a SQL-based database for CRISPR/Cas9 off-target assays. We provide a benchmark data set for algorithms which predict the cleavage efficiency of gRNA/off-target pairs.</p>
+      <p style="font-size:85%">Sp-Cas9 protein bound to a dsDNA (blue) guided by an sgRNA (orange).</p>
+      <h5>Contribute to database</h5>
+      <p>crisprSQL invites submissions of Cas9 off-target indel frequency data, in order to be included in the online database and the benchmark dataset. Please click <a href="submit.php">here</a>.</p>
       <hr class="d-sm-none">
     </div>
     <div class="col-sm-8">
-      <div class="alert alert-primary" role="alert">
-        The database is still in alpha mode.
-      </div>
+      <?php 
+      #<div class="alert alert-primary" role="alert">The database is still in alpha mode.</div>
+      ?>
       <h5>Search database</h5>
       <div class="container">
         <form action="search.php" method="post" enctype="multipart/form-data">
@@ -53,17 +53,20 @@ include "inc/header.php";
   		</form>
       </div>
       <br>
+      <h3>About crisprSQL</h3>
+      <p>crisprSQL is a SQL-based database for CRISPR/Cas9 off-target cleavage assays. 
+      It is a one-stop source for epigenetically annotated, base-pair resolved cleavage frequency distributions to aid with guide design. 
+      Attached gene IDs make this high-resolution data usable for knockout screens, functional genomics and transcriptomics research.</p>
+      <br>
       <h5>Database statistics</h5>
       <?php 
       // show studies involved, number of guides, number of targets, number of targets with at least 1 epigenetic marker
-      $result  = $conn->query("SELECT DISTINCT experiment_id FROM cleavage_data");
-      $result2 = $conn->query("SELECT id FROM cleavage_data");
-      $result3 = $conn->query("SELECT id FROM cleavage_data WHERE epigenetics_ids != ''");
-      echo "<p>crisprSQL contains ".$result->num_rows." <a href='studies.php'>studies</a>, ".$result2->num_rows." total <a href='search.php'>targets</a>, ".$result3->num_rows." of which have at least one <a href='epigen.php'>epigenetic marker</a>.</p>";
+      $experiments = $conn->query("SELECT DISTINCT experiment_id FROM cleavage_data");
+      $guides      = $conn->query("SELECT DISTINCT grna_target_id FROM cleavage_data");
+      $targets     = $conn->query("SELECT id FROM cleavage_data");
+      $targets_epi = $conn->query("SELECT id FROM cleavage_data WHERE epigenetics_ids != ''");
+      echo "<p>crisprSQL contains ".$experiments->num_rows." <a href='studies.php'>studies</a>, totalling ".$guides->num_rows." <a href='search.php'>guides</a> and ".$targets->num_rows." targets, ".$targets_epi->num_rows." of which have at least one <a href='epigen.php'>epigenetic marker</a> attached.</p>";
       ?>
-      <br>
-      <h5>Contribute to database</h5>
-      <p>crisprSQL invites submissions of Sp-Cas9 off-target indel frequency results, in order to be included in the online database and the benchmark dataset. Please click <a href="submit.php">here</a>.</p>
     </div>
   </div>
 
