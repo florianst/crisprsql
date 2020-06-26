@@ -11,19 +11,19 @@ $limit = 500;
 $querystart = "SELECT *, 2*LENGTH(target_sequence) - CHAR_LENGTH(REPLACE(target_sequence, \"C\", '')) - CHAR_LENGTH(REPLACE(target_sequence, \"G\", '')) AS GC_count";
 if (isset($_POST["submit_rna"]) && isset($_POST["guideid"])) {
     $guideid = preg_replace("/[^0-9,.]/", '', $_POST["guideid"]);
-    $search = preg_replace("/[^A-Ta-t ]/", '', $_POST["guide"]);
-    $result = $conn->query($querystart." FROM cleavage_data WHERE grna_target_id LIKE '%{$guideid}%'");
+    $search = "guide ".preg_replace("/[^A-Ta-t ]/", '', $_POST["guide"]);
+    $result = $conn->query($querystart." FROM cleavage_data WHERE grna_target_id = {$guideid}");
 } elseif (isset($_POST["submit_rna"]) && isset($_POST["guide"])) {
     $guide = preg_replace("/[^A-Ta-t ]/", '', $_POST["guide"]);
-    $search = $guide;
+    $search = "guide ".$guide;
     $result = $conn->query($querystart." FROM cleavage_data WHERE grna_target_sequence LIKE '%{$guide}%'");
 } elseif (isset($_POST["submit_target"]) && isset($_POST["target"])) {
     $target = preg_replace("/[^A-Ta-t ]/", '', $_POST["target"]);
-    $search = $target;
+    $search = "target ".$target;
     $result = $conn->query($querystart." FROM cleavage_data WHERE target_sequence LIKE '%{$target}%'");
 } elseif (isset($_POST["submit_geneid"]) && isset($_POST["geneid"])) {
     $geneid = preg_replace("/[^A-Za-z0-9.\- ]/", '', $_POST["geneid"]);
-    $search = $geneid;
+    $search = "gene ID ".$geneid;
     $result = $conn->query($querystart." FROM cleavage_data WHERE target_geneid LIKE '%{$geneid}%'");
 } elseif (isset($_POST["submit_region"]) && isset($_POST["targetregion"])) {
     $targetregion = $_POST["targetregion"];
@@ -104,7 +104,8 @@ if (isset($result)) {
     }
 } else {
     echo "<h2>Guides</h2>";
-    echo "<p>This table only includes guides for which at least two off-target have been measured.</p>";
+    echo "<p>This table shows all guide RNAs with at least two measured off-targets. It can be reordered by clicking on a column title.</p>";
+    echo "<p>Clicking on a guide sequence shows all measured off-targets for the respective guide.</p>";
     
     // display all guides
     $species = array("Human"=>"genome='hg19' OR genome='hg38'", "Rodents"=>"genome='rn5' OR genome='mm9' OR genome='mm10'");
