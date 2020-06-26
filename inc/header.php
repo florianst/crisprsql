@@ -2,7 +2,8 @@
 include 'inc/db.php';
 include 'inc/functions.php';
 
-$navpages = array("index.php"=>"Home", "studies.php"=>"Studies", "search.php"=>"Browse", "epigen.php"=>"Epigenetics", "download.php"=>"Download", "submit.php"=>"Submit", "contact.php"=>"Contact");
+$navpages = array("index.php"=>["Home", "fa-home"], "studies.php"=>["Studies", "fa-book"], "search.php"=>["Browse", "fa-search"], "epigen.php"=>["Epigenetics", "fa-dna"], 
+                  "download.php"=>["Download", "fa-download"], "submit.php"=>["Submit", "fa-upload"], "contact.php"=>["Contact", "fa-envelope"]);
 
 ?>
 <!DOCTYPE html>
@@ -20,6 +21,7 @@ $navpages = array("index.php"=>"Home", "studies.php"=>"Studies", "search.php"=>"
   <script src="/js/bootstrap.min.js"></script>
   <script src="/js/bootstrap-sortable.js"></script>
   <script src="/js/moment.min.js"></script>
+  <link rel="stylesheet" href="/css/fontawesome/all.css">
 </head>
 <body>
 
@@ -38,11 +40,13 @@ $navpages = array("index.php"=>"Home", "studies.php"=>"Studies", "search.php"=>"
   <div class="collapse navbar-collapse" id="collapsibleNavbar">
     <ul class="navbar-nav">
     <?php
-    foreach ($navpages as $path => $title) {
+    foreach ($navpages as $path => $titleicon) {
+        $title = $titleicon[0];
+        $icon  = $titleicon[1];
         $scriptpath = basename($_SERVER['PHP_SELF']);
         if ($path == $scriptpath) { $active = ' active'; } else { $active = ''; }
         echo '<li class="nav-item'.$active.'">
-                 <a class="nav-link" href="'.$path.'">'.$title.'</a>
+                 <a class="nav-link" href="'.$path.'"><i class="fa fa-fw '.$icon.'"></i>'.$title.'</a>
               </li>';
     }
     ?>
