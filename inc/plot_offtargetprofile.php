@@ -36,6 +36,15 @@ function plotOfftargetProfile($array, $imgwidth=180, $imgheight=30) {
     $guide_colour  = imagecolorallocate($image, 128, 255, 0);   // green
     $border_colour = imagecolorallocate($image, 0, 0, 0);       // black
     
+    // get sum of cleavage frequencies
+    $cfsum = 0;
+    $ontarget_cf = 1;
+    foreach ($array as $target) { 
+        $cfsum += $target["cleavage_freq"];
+        if ($target["id"] == $target["grna_target_id"]) { $ontarget_cf = $target["cleavage_freq"]; }
+    }
+    if ($ontarget_cf == 0) { $ontarget_cf = 1; }
+    
     // draw vertical line for each target
     foreach ($array as $target) {
         // calculate x position of line from chromosome and start
@@ -44,7 +53,10 @@ function plotOfftargetProfile($array, $imgwidth=180, $imgheight=30) {
             imagesetthickness($image, 2);
             if ($target["cleavage_freq"] > 0.1) { $colour = $target_colour; }
             else { imagesetthickness($image, 1);  $colour = $weak_colour; }
-            imageline($image, $xpos, 0, $xpos, $imgheight, $colour);
+            $barheight = intval($imgheight * $target["cleavage_freq"] / $ontarget_cf);
+            if ($barheight > $imgheight) { $barheight = $imgheight; }
+            elseif ($barheight < 0) { $barheight = 0; }
+            imageline($image, $xpos, $imgheight, $xpos, $imgheight-$barheight, $colour);
         }
     }
     // draw line for the guide
