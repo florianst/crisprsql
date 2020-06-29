@@ -94,6 +94,9 @@ if (isset($result)) {
                 else { $targetseq .= "<b>".$base."</b>"; $mismatches++; }
             }
             
+            // if cleavage frequency is in scientific (mantissa) notation, make sure to convert it to float and round
+            if (substr_count($row["cleavage_freq"], "e") > 0) { $row["cleavage_freq"] = round($row["cleavage_freq"], 4); }
+            
             echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier"><form action="search.php" method="post" id="form'.$i.'"><input type="hidden" name="submit_rna" /><input type="hidden" name="guideid" id="sgrnaid" value="'.$row["grna_target_id"].'" /><input type="hidden" name="guide" id="sgrna" value="'.$row["grna_target_sequence"].'" /><a href="#" class="submit-link" onclick="document.getElementById(\'form'.$i.'\').submit();">'.$row["grna_target_sequence"].'</a></form></td><td style="font-family:Courier">'.$targetseq.'</td><td>'.$mismatches.'</td><td>'.$row["GC_count"].'</td><td>'.$row["target_chr"].':'.$row["target_start"].'-'.$row["target_end"].'</td><td>'.$row["target_geneid"].'</td><td>'.$row["cleavage_freq"].'</td><td>'.$epigen_str.'</td><td>'.$row["cell_line"].'</td><td>'.$studies.'</td></tr>';
         }
         
