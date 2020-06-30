@@ -4,7 +4,7 @@ include "inc/header.php";
   <div class="row">
     <div class="col-sm-4">
       <img src="4un3_small.jpg" style="height:270px"/>
-      <p style="font-size:85%">Sp-Cas9 protein bound to a dsDNA (blue) guided by an sgRNA (orange). PDB: 4UN3.</p>
+      <p style="font-size:85%">Sp-Cas9 protein bound to a double-stranded DNA (blue) guided by an sgRNA (orange). PDB: 4UN3.</p>
       <h5>Database statistics</h5>
       <?php 
       // show studies involved, number of guides, number of targets, number of targets with at least 1 epigenetic marker
@@ -65,9 +65,9 @@ include "inc/header.php";
       <h4>About crisprSQL</h4>
       <p>crisprSQL is a SQL-based database for CRISPR/Cas9 off-target cleavage assays. 
       It is a one-stop source for epigenetically annotated, base-pair resolved cleavage frequency distributions.</p>
-      <p>This hand-curated, comprehensive dataset can act as an insight into state-of-the-art technologies driving transgenics,
-      inform guide RNA design for genome engineering, and serve as a shared, transparent basis for modelling the interaction of CRISPR/Cas with DNA. 
-      Attached gene IDs make the high-resolution data usable for the first time for informing knockout screens, functional genomics and transcriptomics research.</p>
+      <p>This hand-curated dataset can act as an insight into state-of-the-art technologies driving transgenics,
+      inform guide RNA design for genome engineering, and serve as a shared, transparent basis for modelling off-target DNA cleavage of CRISPR/Cas. 
+      Attached gene IDs make the high-resolution data usable for informing knockout screens, functional genomics and transcriptomics research.</p>
       <br>
       <h4>How To</h4>
       <p>Have a look at the <a href="studies.php">included studies</a> or <a href="search.php">browse through the included guide RNAs</a>.
