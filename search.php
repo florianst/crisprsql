@@ -4,7 +4,14 @@
 // TODO: "target gene" column --> get list of gene names
 include "inc/header.php";
 include "inc/plot_offtargetprofile.php";
+?>
 
+<script>$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+
+<?php
 
 $limit = 500;
 
@@ -126,7 +133,7 @@ if (isset($result)) {
                 <th scope="col">assembly</th>
                 <th scope="col">cell line</th>
                 <th scope="col">study</th>
-                <th scope="col" data-defaultsort="disabled">target distribution</th>
+                <th scope="col" data-defaultsort="disabled" data-toggle="tooltip" data-placement="top" data-html="true" title="cleavage frequency histogram: x-axis from<br>chr1 (left) to chrY (right)">target distribution</th>
                 <th scope="col">measured off-targets</th>
               </tr>
               </thead>
