@@ -1,7 +1,6 @@
 <?php 
 // GC count:
 // SELECT id, grna_target_id, target_sequence, 2*LENGTH(target_sequence) - CHAR_LENGTH(REPLACE(target_sequence, "C", "")) - CHAR_LENGTH(REPLACE(target_sequence, "G", "")) AS GC_count FROM cleavage_data HAVING GC_count > 19
-// TODO: "target gene" column --> get list of gene names
 include "inc/header.php";
 include "inc/plot_offtargetprofile.php";
 ?>
@@ -18,24 +17,29 @@ $limit = 500;
 $querystart = "SELECT *, 2*LENGTH(target_sequence) - CHAR_LENGTH(REPLACE(target_sequence, \"C\", '')) - CHAR_LENGTH(REPLACE(target_sequence, \"G\", '')) AS GC_count";
 if (isset($_POST["submit_rna"]) && isset($_POST["guideid"])) {
     $guideid = preg_replace("/[^0-9,.]/", '', $_POST["guideid"]);
-    $search = "guide ".preg_replace("/[^A-Ta-t ]/", '', $_POST["guide"]);
+    $category = "guide";
+    $search = preg_replace("/[^A-Ta-t ]/", '', $_POST["guide"]);
     $result = $conn->query($querystart." FROM cleavage_data WHERE grna_target_id = {$guideid}");
 } elseif (isset($_POST["submit_rna"]) && isset($_POST["guide"])) {
     $guide = preg_replace("/[^A-Ta-t ]/", '', $_POST["guide"]);
-    $search = "guide ".$guide;
+    $category = "guide";
+    $search = $guide;
     $result = $conn->query($querystart." FROM cleavage_data WHERE grna_target_sequence LIKE '%{$guide}%'");
 } elseif (isset($_POST["submit_target"]) && isset($_POST["target"])) {
     $target = preg_replace("/[^A-Ta-t ]/", '', $_POST["target"]);
-    $search = "target ".$target;
+    $category = "target";
+    $search = $target;
     $result = $conn->query($querystart." FROM cleavage_data WHERE target_sequence LIKE '%{$target}%'");
 } elseif (isset($_POST["submit_geneid"]) && isset($_POST["geneid"])) {
     $geneid = preg_replace("/[^A-Za-z0-9.\- ]/", '', $_POST["geneid"]);
-    $search = "gene ID ".$geneid;
+    $category = "gene ID";
+    $search = $geneid;
     $result = $conn->query($querystart." FROM cleavage_data WHERE target_geneid LIKE '%{$geneid}%'");
 } elseif (isset($_POST["submit_region"]) && isset($_POST["targetregion"])) {
     $targetregion = $_POST["targetregion"];
     if (preg_match("/^(chr)[0-9XVIY]{1,2}:[0-9]{1,10}-[0-9]{1,10}$/", $targetregion)) { // verify string is a proper region
         // split according to chrX:start-end
+        $category = "region";
         $search = $targetregion;
         $chr  = explode(":", $targetregion)[0];
         $temp = explode(":", $targetregion)[1];
@@ -45,10 +49,14 @@ if (isset($_POST["submit_rna"]) && isset($_POST["guideid"])) {
     }
 } 
 if (isset($result)) {
+    // track search result
+    $num_results = $result->num_rows;
+    echo "<script type='text/javascript'>_paq.push(['trackSiteSearch','".$search."','".$category."',".$num_results."]);</script>\r\n";
+    
     // display all matching targets
-    if ($result->num_rows > 0) {
+    if ($num_results > 0) {
         echo "<h2>Targets</h2>";
-        echo "<h4 style='display:inline; margin-right:1em;'>matching your search for {$search}</h4><a href='search.php'>Back</a>";
+        echo "<h4 style='display:inline; margin-right:1em;'>matching your search for ".$category." ".$search."</h4><a href='search.php'>Back</a>";
         echo "<p>Your query yielded {$result->num_rows} results: <img src='".plotOfftargetProfile($result->fetch_all(MYSQLI_ASSOC))."' alt='offtarget_distr' /></p>";
         $result->data_seek(0) ;// reset pointer to result set such that we can go through it again below
         echo '<table class="table table-striped sortable"><thead class="thead-dark">

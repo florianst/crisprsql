@@ -27,7 +27,7 @@ $navpages = array("index.php"=>["Home", "fa-home"], "studies.php"=>["Studies", "
       var _paq = window._paq || [];
       /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
       _paq.push(['disableCookies']);
-      _paq.push(['trackPageView']);
+      <?php if (!isset($_POST["submit_rna"]) && !isset($_POST["submit_rna"]) && !isset($_POST["submit_target"]) && !isset($_POST["submit_region"]) && !isset($_POST["submit_geneid"])) { echo "_paq.push(['trackPageView']);\r\n"; } ?>
       _paq.push(['enableLinkTracking']);
       (function() {
         var u="//analytics.crisprsql.com/";
