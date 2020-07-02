@@ -21,7 +21,7 @@ Matomo is processing the following personal data:
   <div class="row">
     <div class="col-sm">
       <ul>
-        <li>IP address with last two bits anonymised</li>
+        <li>IP address with last two bytes anonymised</li>
         <li>Date and time, time in local timezone</li>
         <li>Title and URL of the page being viewed</li>
         <li>URL of the page that was viewed prior to the current page</li>
