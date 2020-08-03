@@ -57,13 +57,23 @@ if (isset($result)) {
     if ($num_results > 0) {
         echo "<h2>Targets</h2>";
         echo "<h4 style='display:inline; margin-right:1em;'>matching your search for ".$category." ".$search."</h4><a href='search.php'>Back</a>";
-        echo "<p>Your query yielded {$result->num_rows} results: <img src='".plotOfftargetProfile($result->fetch_all(MYSQLI_ASSOC))."' alt='offtarget_distr' /></p>";
+        echo "<p>Your query yielded {$result->num_rows} results: <img src='".plotOfftargetProfile($result->fetch_all(MYSQLI_ASSOC))."' class='offtarget_distr' alt='offtarget_distr' />";
+        
+        // Help toggle button
+        echo "<a class='btn btn-primary' data-toggle='collapse' href='#collapseHelp' role='button' aria-expanded='false' aria-controls='collapseHelp'>Help</a></p>";
+        echo "<div class='collapse' id='collapseHelp'>
+          <div class='card card-body'>
+            <p>Mismatches between guide and target sequences are shown in <strong>bold</strong>. We show the GC count of the target sequence, the target region mapped to the hg19 reference genome (if not shown otherwise) and the GENCODE gene name.<br>
+            Cleavage rate refers to the relative indel frequency at the given location.</p>
+          </div>
+        </div>";
+  
         $result->data_seek(0) ;// reset pointer to result set such that we can go through it again below
-        echo '<table class="table table-striped sortable"><thead class="thead-dark">
+        echo '<table class="table table-striped sortable targets"><thead class="thead-dark">
               <tr>
                 <th scope="col" data-defaultsort="disabled">No.</th>
                 <th scope="col">guide sequence</th>
-                <th scope="col">target sequence</th>
+                <th scope="col">target sequence<div class="explain">mismatches in bold</div></th>
                 <th scope="col">mismatches</th>
                 <th scope="col">target GC</th>
                 <th scope="col">target region</th>

@@ -48,3 +48,16 @@ text-align: center;
 font-weight: bold;
 border-radius: 2em;
 }
+
+table.targets th {
+    vertical-align: top;
+}
+
+table.targets div.explain {
+    font-weight: normal;
+    font-size:90%;
+}
+
+img.offtarget_distr {
+    margin-right: 2em;
+}
