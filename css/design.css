@@ -61,3 +61,14 @@ table.targets div.explain {
 img.offtarget_distr {
     margin-right: 2em;
 }
+
+div.genome_icon{
+    font-size: 7pt;
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff;
+    border-radius: 2px;
+    display: inline-block;
+    margin-left: 0.5em;
+    padding: 1px;
+}

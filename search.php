@@ -125,8 +125,14 @@ if (isset($result)) {
             if ($row["target_geneid"] != '') {
                 $geneid = "<a href='https://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=".$row["genome"]."&position=".$row["target_chr"].":".$row["target_start"]."-".$row["target_end"]."' target='_new'>".$row["target_geneid"]."</a>";
             } else { $geneid = ""; }
+            
+            if ($row["genome"] != "hg19" && $row["genome"] != "") {
+                $genome_icon = "<div class='genome_icon'>".$row["genome"]."</div>";
+            } else {
+                $genome_icon = "";
+            }
     
-            echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier"><form action="search.php" method="post" id="form'.$i.'"><input type="hidden" name="submit_rna" /><input type="hidden" name="guideid" id="sgrnaid" value="'.$row["grna_target_id"].'" /><input type="hidden" name="guide" id="sgrna" value="'.$row["grna_target_sequence"].'" /><a href="#" class="submit-link" onclick="document.getElementById(\'form'.$i.'\').submit();">'.$row["grna_target_sequence"].'</a></form></td><td style="font-family:Courier">'.$targetseq.'</td><td>'.$mismatches.'</td><td>'.$row["GC_count"].'</td><td>'.$row["target_chr"].':'.$row["target_start"].'-'.$row["target_end"].'</td><td>'.$geneid.'</td><td>'.$row["cleavage_freq"].'</td><td>'.$epigen_str.'</td><td>'.$row["cell_line"].'</td><td>'.$studies.'</td></tr>';
+            echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier"><form action="search.php" method="post" id="form'.$i.'"><input type="hidden" name="submit_rna" /><input type="hidden" name="guideid" id="sgrnaid" value="'.$row["grna_target_id"].'" /><input type="hidden" name="guide" id="sgrna" value="'.$row["grna_target_sequence"].'" /><a href="#" class="submit-link" onclick="document.getElementById(\'form'.$i.'\').submit();">'.$row["grna_target_sequence"].'</a></form></td><td style="font-family:Courier">'.$targetseq.'</td><td>'.$mismatches.'</td><td>'.$row["GC_count"].'</td><td>'.$row["target_chr"].':'.$row["target_start"].'-'.$row["target_end"].$genome_icon.'</td><td>'.$geneid.'</td><td>'.$row["cleavage_freq"].'</td><td>'.$epigen_str.'</td><td>'.$row["cell_line"].'</td><td>'.$studies.'</td></tr>';
         }
         
         echo "</tbody></table><br>";
