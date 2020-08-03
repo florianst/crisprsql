@@ -122,7 +122,11 @@ if (isset($result)) {
             // if cleavage frequency is in scientific (mantissa) notation, make sure to convert it to float and round
             if (substr_count($row["cleavage_freq"], "e") > 0) { $row["cleavage_freq"] = round($row["cleavage_freq"], 4); }
             
-            echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier"><form action="search.php" method="post" id="form'.$i.'"><input type="hidden" name="submit_rna" /><input type="hidden" name="guideid" id="sgrnaid" value="'.$row["grna_target_id"].'" /><input type="hidden" name="guide" id="sgrna" value="'.$row["grna_target_sequence"].'" /><a href="#" class="submit-link" onclick="document.getElementById(\'form'.$i.'\').submit();">'.$row["grna_target_sequence"].'</a></form></td><td style="font-family:Courier">'.$targetseq.'</td><td>'.$mismatches.'</td><td>'.$row["GC_count"].'</td><td>'.$row["target_chr"].':'.$row["target_start"].'-'.$row["target_end"].'</td><td>'.$row["target_geneid"].'</td><td>'.$row["cleavage_freq"].'</td><td>'.$epigen_str.'</td><td>'.$row["cell_line"].'</td><td>'.$studies.'</td></tr>';
+            if ($row["target_geneid"] != '') {
+                $geneid = "<a href='https://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=".$row["genome"]."&position=".$row["target_chr"].":".$row["target_start"]."-".$row["target_end"]."' target='_new'>".$row["target_geneid"]."</a>";
+            } else { $geneid = ""; }
+    
+            echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier"><form action="search.php" method="post" id="form'.$i.'"><input type="hidden" name="submit_rna" /><input type="hidden" name="guideid" id="sgrnaid" value="'.$row["grna_target_id"].'" /><input type="hidden" name="guide" id="sgrna" value="'.$row["grna_target_sequence"].'" /><a href="#" class="submit-link" onclick="document.getElementById(\'form'.$i.'\').submit();">'.$row["grna_target_sequence"].'</a></form></td><td style="font-family:Courier">'.$targetseq.'</td><td>'.$mismatches.'</td><td>'.$row["GC_count"].'</td><td>'.$row["target_chr"].':'.$row["target_start"].'-'.$row["target_end"].'</td><td>'.$geneid.'</td><td>'.$row["cleavage_freq"].'</td><td>'.$epigen_str.'</td><td>'.$row["cell_line"].'</td><td>'.$studies.'</td></tr>';
         }
         
         echo "</tbody></table><br>";
@@ -139,7 +143,7 @@ if (isset($result)) {
     $species = array("Human"=>"genome='hg19' OR genome='hg38'", "Rodents"=>"genome='rn5' OR genome='mm9' OR genome='mm10'");
     
     foreach ($species as $title => $cond) {
-        $result = $conn->query("SELECT id, genome, grna_target_chr, grna_target_start, grna_target_end, grna_target_sequence, grna_target_id, target_geneid, cell_line FROM cleavage_data WHERE ".$cond." GROUP BY grna_target_id, cell_line, experiment_id ORDER BY IF (grna_target_chr = 'chrX' OR grna_target_chr = 'chrY' OR grna_target_chr='chrMT', 50, CAST(SUBSTRING_INDEX(grna_target_chr, 'chr', -1) AS unsigned)) LIMIT {$limit}");
+        $result = $conn->query("SELECT id, genome, grna_target_chr, grna_target_start, grna_target_end, grna_target_sequence, grna_target_id, target_chr, target_start, target_end, target_geneid, cell_line FROM cleavage_data WHERE ".$cond." GROUP BY grna_target_id, cell_line, experiment_id ORDER BY IF (grna_target_chr = 'chrX' OR grna_target_chr = 'chrY' OR grna_target_chr='chrMT', 50, CAST(SUBSTRING_INDEX(grna_target_chr, 'chr', -1) AS unsigned)) LIMIT {$limit}");
         if ($result->num_rows > 0) {
             echo "<h4>".$title."</h4><table class='table table-striped sortable'>";
             echo '<thead class="thead-dark">
@@ -186,8 +190,12 @@ if (isset($result)) {
                         else { $region = "<i>n/a</i>"; }
                     }
                     
+                    if ($row["target_geneid"] != '') {
+                        $geneid = "<a href='https://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=".$row["genome"]."&position=".$row["target_chr"].":".$row["target_start"]."-".$row["target_end"]."' target='_new'>".$row["target_geneid"]."</a>";
+                    } else { $geneid = ""; }
+                    
                     $i++;
-                    echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier"><form action="search.php" method="post" id="form'.$i.'"><input type="hidden" name="submit_rna" /><input type="hidden" name="guideid" id="sgrnaid" value="'.$row["grna_target_id"].'" /><input type="hidden" name="guide" id="sgrna" value="'.$row["grna_target_sequence"].'" /><a href="#" class="submit-link" onclick="document.getElementById(\'form'.$i.'\').submit();">'.$targetseq.'</a></form></td><td>'.$region.'</td><td>'.$row["target_geneid"].'</td><td>'.$row["genome"].'</td><td>'.$row["cell_line"].'</td><td>'.$studies.'</td><td><img src="'.plotOfftargetProfile($targets).'" alt="offtarget distribution" /></td><td>'.$result3->num_rows.'</td></tr>';
+                    echo '<tr><th scope="row">'.$i.'</th><td style="font-family:Courier"><form action="search.php" method="post" id="form'.$i.'"><input type="hidden" name="submit_rna" /><input type="hidden" name="guideid" id="sgrnaid" value="'.$row["grna_target_id"].'" /><input type="hidden" name="guide" id="sgrna" value="'.$row["grna_target_sequence"].'" /><a href="#" class="submit-link" onclick="document.getElementById(\'form'.$i.'\').submit();">'.$targetseq.'</a></form></td><td>'.$region.'</td><td>'.$geneid.'</td><td>'.$row["genome"].'</td><td>'.$row["cell_line"].'</td><td>'.$studies.'</td><td><img src="'.plotOfftargetProfile($targets).'" alt="offtarget distribution" /></td><td>'.$result3->num_rows.'</td></tr>';
                     $grna_targetseq_old = $row["grna_target_sequence"];
                 }
             }
