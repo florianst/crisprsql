@@ -13,6 +13,7 @@ $navpages = array("index.php"=>["Home", "fa-home"], "studies.php"=>["Studies", "
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="format-detection" content="telephone=no">
+  <meta name="robots" content="noindex" /> <!-- search engines do not index this website -->
   <link rel="stylesheet" href="/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/design.css">
   <link rel="stylesheet" href="/css/bootstrap-sortable.css">
