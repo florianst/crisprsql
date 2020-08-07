@@ -146,10 +146,10 @@ if (isset($result)) {
     echo "<p>Clicking on a guide sequence shows all measured off-targets for the respective guide.</p>";
     
     // display all guides
-    $species = array("Human"=>"genome='hg19' OR genome='hg38'", "Rodents"=>"genome='rn5' OR genome='mm9' OR genome='mm10'");
+    $species = array("Human"=>"genome='hg19' OR genome='hg38' OR (genome='' AND cell_line='')", "Rodents"=>"genome='rn5' OR genome='mm9' OR genome='mm10'");
     
     foreach ($species as $title => $cond) {
-        $result = $conn->query("SELECT id, genome, grna_target_chr, grna_target_start, grna_target_end, grna_target_sequence, grna_target_id, target_chr, target_start, target_end, target_geneid, cell_line FROM cleavage_data WHERE ".$cond." GROUP BY grna_target_id, cell_line, experiment_id ORDER BY IF (grna_target_chr = 'chrX' OR grna_target_chr = 'chrY' OR grna_target_chr='chrMT', 50, CAST(SUBSTRING_INDEX(grna_target_chr, 'chr', -1) AS unsigned)) LIMIT {$limit}");
+        $result = $conn->query("SELECT id, genome, grna_target_chr, grna_target_start, grna_target_end, grna_target_sequence, grna_target_id, target_chr, target_start, target_end, target_geneid, cell_line FROM cleavage_data WHERE ".$cond." GROUP BY grna_target_id, cell_line, experiment_id ORDER BY IF (grna_target_chr = 'chrX' OR grna_target_chr = 'chrY' OR grna_target_chr='chrMT' OR cell_line='', 50, CAST(SUBSTRING_INDEX(grna_target_chr, 'chr', -1) AS unsigned)) LIMIT {$limit}");
         if ($result->num_rows > 0) {
             echo "<h4>".$title."</h4><table class='table table-striped sortable'>";
             echo '<thead class="thead-dark">
@@ -161,7 +161,7 @@ if (isset($result)) {
                 <th scope="col">assembly</th>
                 <th scope="col">cell line</th>
                 <th scope="col">study</th>
-                <th scope="col" data-defaultsort="disabled" data-toggle="tooltip" data-placement="top" data-html="true" title="cleavage frequency histogram: x-axis from<br>chr1 (left) to chrY (right)">target distribution</th>
+                <th scope="col" data-defaultsort="disabled" data-toggle="tooltip" data-placement="top" data-html="true" title="cleavage frequency histogram: x-axis from<br>chr1 (left) to chrY (right)"><abbr title="">target distribution</abbr></th>
                 <th scope="col">measured off-targets</th>
               </tr>
               </thead>
