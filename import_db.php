@@ -26,7 +26,8 @@ $sqlCreateCleavageExperiments = " CREATE TABLE IF NOT EXISTS cleavage_experiment
                                 assay TEXT,
                                 whole_genome BOOLEAN,
                                 pubmed_id INT UNSIGNED,
-                                doi TEXT
+                                doi TEXT,
+                                delivery_mode INT UNSIGNED
                                 ); ";
 
 $sqlCreateCleavageData = " CREATE TABLE IF NOT EXISTS cleavage_data (
@@ -72,7 +73,7 @@ if ($result1 === TRUE && $result2 === TRUE && $result3 === TRUE && $result4 === 
     echo "Tables created successfully";
 
     // read sqlite .db file - path defined in class
-    $db = new SQLiteDB("../offtarget_140520_measuredonly.db");
+    $db = new SQLiteDB("../offtarget_100720_measuredonly.db");
     $tables = array("epigenetics_experiments", "cleavage_experiments", "cleavage_data");
 
     foreach ($tables as $table) {

@@ -5,7 +5,7 @@ include "inc/header.php";
 <p>The following studies are included in crisprSQL:</p>
 
 <?php
-$result = $conn->query("SELECT experiment_id, cell_line, COUNT(cleavage_data.id) AS count, cleavage_experiments.assay, cleavage_experiments.whole_genome, cleavage_experiments.doi, cleavage_experiments.name, cleavage_experiments.pubmed_id FROM cleavage_data INNER JOIN cleavage_experiments ON cleavage_data.experiment_id = cleavage_experiments.id GROUP BY experiment_id, cell_line"); // group the data according to assay type and cell line
+$result = $conn->query("SELECT experiment_id, cell_line, COUNT(cleavage_data.id) AS count, cleavage_experiments.assay, cleavage_experiments.whole_genome, cleavage_experiments.delivery_mode, cleavage_experiments.doi, cleavage_experiments.name, cleavage_experiments.pubmed_id FROM cleavage_data INNER JOIN cleavage_experiments ON cleavage_data.experiment_id = cleavage_experiments.id GROUP BY experiment_id, cell_line"); // group the data according to assay type and cell line
 if ($result->num_rows > 0) {
     echo '<table class="table table-striped">
           <thead class="thead-dark">
@@ -14,6 +14,7 @@ if ($result->num_rows > 0) {
             <th scope="col">study</th>
             <th scope="col">assay</th>
             <th scope="col">cell line</th>
+            <th scope="col" data-toggle="tooltip" data-placement="top" data-html="true" title="EP: electroporation,<br>LF: lipofection"><abbr title="">delivery mode</abbr></th>
             <th scope="col">total guides</th>
             <th scope="col">total targets</th>
             <th scope="col">epigenetically annotated targets</th>
@@ -54,8 +55,14 @@ if ($result->num_rows > 0) {
         $geneids_offtarget = join(", ", $geneids);
         if (strlen($geneids_ontarget) > 0 && strlen($geneids_offtarget) > 0) { $geneids_offtarget = ', '.$geneids_offtarget; }
         
+        switch ($row["delivery_mode"]) {
+            case "0": $delivery_mode = 'EP'; break;
+            case "1": $delivery_mode = 'LF'; break;
+            default:  $delivery_mode = "";
+        }
+        
         if (strlen($row["doi"]) > 1) { $weblink = $row["doi"]; } else { $weblink = 'https://www.ncbi.nlm.nih.gov/pubmed/'.$row["pubmed_id"]; }
-        echo '<tr><th scope="row">'.$i.'</th><td><a href="'.$weblink.'" target="_blank">'.$row["name"].'</a></td><td>'.$row["assay"].'</td><td>'.$row["cell_line"].'</td><td>'.$guidecount.'</td><td>'.$row["count"].'</td><td>'.$result2->num_rows.'</td><td><b>'.$geneids_ontarget.'</b>'.$geneids_offtarget.'</td></tr>';
+        echo '<tr><th scope="row">'.$i.'</th><td><a href="'.$weblink.'" target="_blank">'.$row["name"].'</a></td><td>'.$row["assay"].'</td><td>'.$row["cell_line"].'</td><td>'.$delivery_mode.'</td><td>'.$guidecount.'</td><td>'.$row["count"].'</td><td>'.$result2->num_rows.'</td><td><b>'.$geneids_ontarget.'</b>'.$geneids_offtarget.'</td></tr>';
     }
     echo '<tr><th scope="row">sum</th><td></td><td></td><td></td><td>'.$sumguides.'</td><td>'.$sumcount.'</td><td>'.$sumepigen.'</td><td></td></tr>';
     echo "</tbody></table>";
